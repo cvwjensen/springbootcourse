@@ -12,6 +12,7 @@ Hint: search for files with the name spring-configuration-metadata.json in all p
 
 ### Exercise 2: Create your own META-INF/spring-configuration-metadata.json
 Create a @Configuration/@ConfigurationProperties("app.mail") annotated class with the following properties:
+
     String smtp-server
     int port
     String username
