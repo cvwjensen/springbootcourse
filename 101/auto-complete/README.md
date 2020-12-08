@@ -25,11 +25,11 @@ Hint: Enable Annotation Configuration Processing in the IDE
 Hint: add dependency to your pom:
 
 ```
- <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-configuration-processor</artifactId>
-    <optional>true</optional>
- </dependency>
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-configuration-processor</artifactId>
+   <optional>true</optional>
+</dependency>
 ```
 
 #### Solution
