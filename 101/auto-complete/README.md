@@ -35,7 +35,7 @@ Open Java Compiler -> Annotation Processing. Check "Enable annotation processing
 
 
 
-### Exercise 3: Make the default value of the port property 25.autocomplete
+### Exercise 3: Make the default value of the port property 25.
 
 #### Solution
 1. just set the default value for the field port=25
