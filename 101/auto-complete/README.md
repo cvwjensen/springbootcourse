@@ -12,10 +12,10 @@ Hint: search for files with the name spring-configuration-metadata.json in all p
 
 ### Exercise 2: Create your own META-INF/spring-configuration-metadata.json
 Create a @Configuration/@ConfigurationProperties("app.mail") annotated class with the following properties:
-String smtp-server
-int port
-String username
-String password
+    String smtp-server
+    int port
+    String username
+    String password
 
 Hint: Make sure it has getters and setters
 Hint: Enable Annotation Configuration Processing in the IDE
