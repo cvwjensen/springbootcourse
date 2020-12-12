@@ -47,3 +47,10 @@ POST http://localhost:9200/_template/metrics_template
     }
   }
 }
+
+
+Populate Kibana with Dashboards:
+
+https://github.com/acroquest/micrometer-kibana-dashboard.git
+
+Remember to replace index from metrics-* to micrometer-metrics-* in the visualization definitions
