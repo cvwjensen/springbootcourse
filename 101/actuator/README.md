@@ -1,6 +1,6 @@
 # Actuator
 
-## Exercises
+## Exercises on Application Metadata
 
 Create a new Springboot project and add "Web" and "Actuator" starters.
 
@@ -127,5 +127,31 @@ info.team.contact-email=team-alfa-bravo@example.com
 ```
 
 Hit the http://localhost:8080/actuator/info
+
+
+## Exercises on Health
+
+### Exercise 1: Enable the RabbitMQ build-in health indicator
+
+Add the `spring-boot-starter-amqp` to the `pom.xml`.
+
+Enable the rabbit health check by adding to the `application.properties`:
+
+`management.health.rabbit.enabled=true`
+
+Restart the application and hit the health endpoint to see system status.
+
+http://localhost:8080/actuator/health
+
+
+### Exercise 2: Create your own health check: ServiceWindowHealthCheck
+
+Create a Health Check that reports down if we are in a service-window period. This will help the loadbalancer to stop routing traffic the your service.
+
+Read the service window period from the `application.properties`.
+
+
+#### Solution
+See `101/actuator/src/main/java/dk/lundogbendsen/health/ServiceWindowHealtIndicator.java`
 
 

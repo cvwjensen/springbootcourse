@@ -1,0 +1,49 @@
+If elasticsearch gives your grief because the documents are empty:
+
+The reason is that the micrometer-metrics index is associated with a template called _template/metrics_template in ES that does not index the documents.
+
+Delete it and recreate it with
+
+POST http://localhost:9200/_template/metrics_template
+{
+  "index_patterns": [
+    "metrics*"
+  ],
+  "mappings": {
+    "_source": {
+      "enabled": true
+    },
+    "properties": {
+      "name": {
+        "type": "keyword"
+      },
+      "count": {
+        "type": "double"
+      },
+      "value": {
+        "type": "double"
+      },
+      "sum": {
+        "type": "double"
+      },
+      "mean": {
+        "type": "double"
+      },
+      "duration": {
+        "type": "double"
+      },
+      "max": {
+        "type": "double"
+      },
+      "total": {
+        "type": "double"
+      },
+      "unknown": {
+        "type": "double"
+      },
+      "active": {
+        "type": "double"
+      }
+    }
+  }
+}
