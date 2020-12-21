@@ -6,7 +6,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan
+@SpringBootApplication
 public class SpringPrimerApplication {
     public static void main(String[] args) {
         final ConfigurableApplicationContext context = SpringApplication.run(SpringPrimerApplication.class, args);

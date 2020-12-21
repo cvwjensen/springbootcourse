@@ -171,3 +171,79 @@ public class SpringPrimerApplication {
     }
 }
 ```
+
+
+### Exercise 6 - Curated list of dependencies - find version of a dependency
+In this exercise you'll inspect the list fo dependencies in order to find out exactly with version of Spring Core we are using.
+
+- Open the pom.xml.
+- Use Intellij to navigate to the Parent pom.
+- From here navigate to the parent's Parent pom.
+- Here you'll find a lot of XML snippets in the structure:
+```
+<properties>
+...
+</properties>
+<dependencyManagement>
+  <dependencies>
+  ...
+  </dependencies>
+</dependencyManagement>
+```
+- Search for "rabbit".
+- ?What is the version of the RabbitMQ client?
+
+
+### Exercise 7 - Auto configuration
+Auto configuration kicks in, when Spring detects the @EnableAutoConfiguration annotation.
+The annotation enable auto-configuration of the Spring Application Context, attempting to guess and configure beans that you are likely to need. Auto-configuration classes are usually applied based on your classpath and what beans you have defined.
+
+- Open the `META-INF/spring.factories` of the `spring-boot-autoconfigure` dependency (Ctrl + Shift + N) (You may have to press the combination twice to extend the search into dependencies)
+- Find the `# Auto Configure` section (around line 20).
+- Here is a key called `org.springframework.boot.autoconfigure.EnableAutoConfiguration` with a multi-line value.
+- The key is a reference to an actual class - open it by ctrl-clicking it (or press Ctrl + B).
+- This opens up the annotation `@EnableAutoConfiguration`.
+- One of the first things it does, is `@Import(AutoConfigurationImportSelector.class)`
+- The `AutoConfigurationImportSelector` contains the logic for loading the auto-configuration classes referenced in the multi-line value from before.
+- Find and open one of the auto-configuration classes `MongoAutoConfiguration`.
+- This is how Springboot sets up mongo for you, if you include the
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-mongodb</artifactId>
+</dependency>
+```
+- Below is the content of `MongoAutoConfiguration`: 
+```
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnClass(MongoClient.class)
+@EnableConfigurationProperties(MongoProperties.class)
+@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDatabaseFactory")
+public class MongoAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(MongoClient.class)
+	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers, MongoClientSettings settings) {
+		return new MongoClientFactory(builderCustomizers.orderedStream().collect(Collectors.toList())).createMongoClient(settings);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(MongoClientSettings.class)
+	static class MongoClientSettingsConfiguration {
+
+		@Bean
+		MongoClientSettings mongoClientSettings() {
+			return MongoClientSettings.builder().build();
+		}
+
+		@Bean
+		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties, Environment environment) {
+			return new MongoPropertiesClientSettingsBuilderCustomizer(properties, environment);
+		}
+	}
+}
+```
+- It is an example of how the @ConditionalNNN annotations work. In this case the @Beans will be setup if the class `MongoClient` is present on the classpath of the application.
+- The MongoClient is part of the `spring-boot-starter-data-mongodb`, so that is why Mongo is working out of the box, just by adding the starter.
+
+**This is how starters work all over!**
