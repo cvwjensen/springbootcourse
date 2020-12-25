@@ -1,6 +1,10 @@
 package dk.lundogbendsen.api.controller;
 
 import dk.lundogbendsen.api.model.Person;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,8 +23,8 @@ public class MyRestController {
     }
 
     @PostMapping
-    public Person receivePerson(@RequestBody Person person) {
-        return person;
+    public void receivePerson(@RequestBody Person person) {
+        System.out.println("person = " + person);
     }
 
     @PostMapping("/file")
@@ -29,5 +33,29 @@ public class MyRestController {
         System.out.println("content = " + content);
         System.out.println("contentType = " + contentType);
         return file.getOriginalFilename();
+    }
+
+    @GetMapping("throws")
+    public String throwsException() {
+        throw new RuntimeException("Hello");
+    }
+
+    @GetMapping("person")
+    public Person getPerson() {
+        Person p = new Person();
+        p.setFirstName("Christian");
+        p.setLastName("Jensen");
+        return p;
+    }
+
+    @GetMapping("person-special")
+    public ResponseEntity<Person> getPersonSpecial() {
+        final Person person = new Person();
+        person.setFirstName("Christian");
+        person.setLastName("Jensen");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("TraceId", "abc123");
+        final ResponseEntity<Person> ok = new ResponseEntity<>(person, headers, HttpStatus.OK);
+        return ok;
     }
 }

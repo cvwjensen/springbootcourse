@@ -61,7 +61,7 @@ public Long pathMapping(@PathVariable Long id) {
 ### Exercise 4: Map input to POJO
 You can have Springboot convert the request body to a Pojo. For instance is the client is sending Json, you could make a Model representing the Json and Springboot will make a Pojo with the input.
 - Make a class Person with fields firstName and lastName. Add setters and getters (Hint: Lombok).
-- Make a method `public Person receivePerson(Person person)`.
+- Make a method `public void receivePerson(Person person)`.
 - Annotate the method with @PostMapping to instruct Spring to map the POST verb.
 - Annotate the person parameter with @RequestBody to instruct Spring to convert the request body to a Person object
 - Restart the app.
@@ -70,8 +70,8 @@ You can have Springboot convert the request body to a Pojo. For instance is the 
 #### Solution
 ```
 @PostMapping
-public Person receivePerson(@RequestBody Person person) {
-    return person;
+public void receivePerson(@RequestBody Person person) {
+    System.out.println("person = " + person);
 }
 ```
 
@@ -112,3 +112,69 @@ public String receiveFile(@RequestParam("file") MultipartFile file, @RequestHead
 }
 ```
 
+### Exercise 6: Pojo output
+It is easy to send Strings and primitives like longs and ints. Just let the controller method return them, and they are automatically converted to the response body.
+But it is just as easy to send a complex object like a pojo.
+- Make a method `public Person getPerson()` that creates a Person object and returns it.
+- Annotate the method with `@GetMapping("person")`
+- Restart the application.
+- Run `curl localhost:8080/person`.
+
+#### Solution:
+```
+@GetMapping("person")
+public Person getPerson() {
+    Person p = new Person();
+    p.setFirstName("Christian");
+    p.setLastName("Jensen");
+    return p;
+}
+```
+
+### Exercise 7: Complete control using ResponseEntity
+Sometimes you want to control the response headers in the Controller. In this case you can make the method return a ResponseEntity. 
+The ResponseEntity represents both http status code, headers and content in one object.
+
+- Make a method `public ResponseEntity<String> getPersonSpecial()`
+- Annotate with `@GetMapping("person-special")`
+- Make a Person object.
+- Make a new ResponseEntity object for a Person object.
+- Add a header "TraceId" with some random value. A practical application for this TraceId would be for the client to have a concrete reference to the the request in case something goes wrong and the client wants to call customer support.
+- Add a status code "OK".
+- Add the person object.
+- Return the ResponseEntity.
+- Restart the application.
+- Run `curl localhost:8080/person-special -i` and inspect the result.
+
+#### Solution
+```
+@GetMapping("person-special")
+public ResponseEntity<Person> getPersonSpecial() {
+    final Person person = new Person();
+    person.setFirstName("Christian");
+    person.setLastName("Jensen");
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("TraceId", "abc123");
+    final ResponseEntity<Person> ok = new ResponseEntity<>(person, headers, HttpStatus.OK);
+    return ok;
+}
+```
+
+### Exercise 8: Client wants XML
+In http there is a concept of Content Negotiation. The client sends a header "Accept" which declares which formats it can consume. 
+The DispatcherServlet will then try to convert the result of the controller to the accepted format.
+- In order to serve XML, a new dependency must be added to the pom.xml:
+```
+<dependency>
+  <groupId>com.fasterxml.jackson.dataformat</groupId>
+  <artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+```
+- Restart the Application.
+- Run `curl localhost:8080/person -H "Accept: application/xml`.
+
+
+### Exercise 9: Client sends XML
+Json is the dominating paradigm of message exchange format on the web. But sometimes the client send XML.
+Since you have added the XML capable converter as a dependency in the previous exercise, you can now receive XML as well: 
+- Run `curl -H "content-type: application/xml" localhost:8080 -d '<Person><firstName>Christian</firstName><lastName>Jensen</lastName></Person>'`
