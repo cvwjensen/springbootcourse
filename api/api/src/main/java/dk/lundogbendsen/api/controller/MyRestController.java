@@ -1,13 +1,18 @@
 package dk.lundogbendsen.api.controller;
 
 import dk.lundogbendsen.api.model.Person;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 @RestController
@@ -57,5 +62,18 @@ public class MyRestController {
         headers.add("TraceId", "abc123");
         final ResponseEntity<Person> ok = new ResponseEntity<>(person, headers, HttpStatus.OK);
         return ok;
+    }
+
+
+    @RequestMapping(path = "/download", method = RequestMethod.GET)
+    public ResponseEntity<Resource> download(String param) throws IOException {
+        File file = new File("api/http-status-codes.png");
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=http-status-codes.png")
+                .body(resource);
     }
 }

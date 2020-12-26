@@ -1,6 +1,6 @@
 # API
 
-## Exercises
+## Exercises - Section 1: Controlling input and output
 
 ### Exercise 1: Create a RestController
 - Create a Springboot Web project
@@ -160,7 +160,36 @@ public ResponseEntity<Person> getPersonSpecial() {
 }
 ```
 
-### Exercise 8: Client wants XML
+### Exercise 8: Download a File
+You can use the ResponseEntity to serve files to the client.
+- Make a method `public ResponseEntity<Resource> download(String param) throws IOException`.
+- Annotate with `@GetMapping(path = "/download")`
+- Create a File object pointing to an actual file on your harddrive.
+- Create an InputStreamResource to wrap the file like: `InputStreamResource resource = new InputStreamResource(new FileInputStream(file))`.
+- Create a ResponseEntity of type InputStreamResource where you set:
+  - content-length (length of file)
+  - content-type (MediaType.APPLICATION_OCTET_STREAM)
+  - content-disposition (attachment; filename=<the files name>)
+  - body (the InputStreamResource you created)
+- Restart the application.
+- Go to localhost:8080/download in a browser
+
+#### Solution
+```
+    @GetMapping(path = "/download")
+    public ResponseEntity<Resource> download(String param) throws IOException {
+        File file = new File("api/http-status-codes.png");
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=http-status-codes.png")
+                .body(resource);
+    }
+```
+
+### Exercise 9: Client wants XML
 In http there is a concept of Content Negotiation. The client sends a header "Accept" which declares which formats it can consume. 
 The DispatcherServlet will then try to convert the result of the controller to the accepted format.
 - In order to serve XML, a new dependency must be added to the pom.xml:
@@ -174,7 +203,18 @@ The DispatcherServlet will then try to convert the result of the controller to t
 - Run `curl localhost:8080/person -H "Accept: application/xml`.
 
 
-### Exercise 9: Client sends XML
+### Exercise 10: Client sends XML
 Json is the dominating paradigm of message exchange format on the web. But sometimes the client send XML.
 Since you have added the XML capable converter as a dependency in the previous exercise, you can now receive XML as well: 
 - Run `curl -H "content-type: application/xml" localhost:8080 -d '<Person><firstName>Christian</firstName><lastName>Jensen</lastName></Person>'`
+
+## Exercises - Section 2: Exception Handling
+When exceptions happens, Springboot gives you some basic handling out of the box. If errors are client side, it has a variety of handlers that produce meaningful error reponses for that. All other errors result in a 500 error.
+
+As always Springboot lets you take complete control by setting up some error handlers. You can control exceptions directly in the controller using the @ExceptionHandler annotation, or you can create a @ControllerAdvice that handles exceptions across many controllers.
+
+The latter approach is recommended.
+
+
+
+### Exercise 1: Create a RestController
