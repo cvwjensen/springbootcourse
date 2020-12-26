@@ -2,12 +2,14 @@ package dk.lundogbendsen.restassignmentapi.api;
 
 import dk.lundogbendsen.springbootcourse.api.personservice.model.Person;
 import dk.lundogbendsen.springbootcourse.api.personservice.service.PersonService;
+import dk.lundogbendsen.springbootcourse.api.personservice.service.exceptions.PersonCreateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class PersonController {
@@ -22,9 +24,20 @@ public class PersonController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Person create(@RequestParam String name, @RequestParam Long age) {
-        final Person person = Person.builder().name(name).age(age).build();
+    public Person create(@RequestBody Person person) {
         final Person created = personService.create(person);
+        return created;
+    }
+
+    @PostMapping("create2")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Person create2(@RequestBody Person person) {
+        final Person created;
+        try {
+            created = personService.create(person);
+        } catch (Exception e) {
+            throw new BadRequestException("Baad request!");
+        }
         return created;
     }
 
@@ -45,5 +58,11 @@ public class PersonController {
     public void delete(@PathVariable Long id) {
         personService.delete(id);
     }
+
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public String personCreateExceptionHandler(PersonCreateException e) {
+//        return e.getMessage();
+//    }
 
 }

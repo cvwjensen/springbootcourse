@@ -12,7 +12,7 @@
 - Go to http://localhost:8080
 
 #### Solution
-```
+```java
 @RestController
 public class MyRestController {
     @GetMapping
@@ -31,7 +31,7 @@ You can map a method parameter to either a query parameter or a form field using
 - Go to http://localhost:8080?message=alive!
 
 #### Solution
-```
+```java
 @RestController
 public class MyRestController {
     @GetMapping
@@ -51,7 +51,7 @@ You can map a method parameter to some part of the request path using the @PathV
 - Go to http://localhost:8080/666
 
 #### Solution
-```
+```java
 @GetMapping("{id}")
 public Long pathMapping(@PathVariable Long id) {
     return id;
@@ -68,7 +68,7 @@ You can have Springboot convert the request body to a Pojo. For instance is the 
 - Run `curl -H "content-type: application/json" localhost:8080 -d '{"firstName":"Christian","lastName":"Jensen"}'`.
 
 #### Solution
-```
+```java
 @PostMapping
 public void receivePerson(@RequestBody Person person) {
     System.out.println("person = " + person);
@@ -84,7 +84,7 @@ A file upload is really just a http request where the content part should be int
 - Run `curl localhost:8080/file -F "file=@docker-compose.yml"` (or some other local text-file)
 
 #### Solution
-```
+```java
 @PostMapping("/file")
 public String receiveFile(@RequestParam("file") MultipartFile file) throws IOException {
     final String content = new String(file.getBytes());
@@ -102,7 +102,7 @@ You can map any header to your method by using the @RequestHeader annotation.
 - Run `curl localhost:8080/file -F "file=@docker-compose.yml"` (or some other local text-file)
 
 #### Solution
-```
+```java
 @PostMapping("/file")
 public String receiveFile(@RequestParam("file") MultipartFile file, @RequestHeader(name = "Content-Type") String contentType) throws IOException {
     final String content = new String(file.getBytes());
@@ -121,7 +121,7 @@ But it is just as easy to send a complex object like a pojo.
 - Run `curl localhost:8080/person`.
 
 #### Solution:
-```
+```java
 @GetMapping("person")
 public Person getPerson() {
     Person p = new Person();
@@ -147,7 +147,7 @@ The ResponseEntity represents both http status code, headers and content in one 
 - Run `curl localhost:8080/person-special -i` and inspect the result.
 
 #### Solution
-```
+```java
 @GetMapping("person-special")
 public ResponseEntity<Person> getPersonSpecial() {
     final Person person = new Person();
@@ -175,25 +175,25 @@ You can use the ResponseEntity to serve files to the client.
 - Go to localhost:8080/download in a browser
 
 #### Solution
-```
-    @GetMapping(path = "/download")
-    public ResponseEntity<Resource> download(String param) throws IOException {
-        File file = new File("api/http-status-codes.png");
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+```java
+  @GetMapping(path = "/download")
+  public ResponseEntity<Resource> download(String param) throws IOException {
+      File file = new File("api/http-status-codes.png");
+      InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
-        return ResponseEntity.ok()
-                .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header("Content-Disposition", "attachment; filename=http-status-codes.png")
-                .body(resource);
-    }
+      return ResponseEntity.ok()
+              .contentLength(file.length())
+              .contentType(MediaType.APPLICATION_OCTET_STREAM)
+              .header("Content-Disposition", "attachment; filename=http-status-codes.png")
+              .body(resource);
+  }
 ```
 
 ### Exercise 9: Client wants XML
 In http there is a concept of Content Negotiation. The client sends a header "Accept" which declares which formats it can consume. 
 The DispatcherServlet will then try to convert the result of the controller to the accepted format.
 - In order to serve XML, a new dependency must be added to the pom.xml:
-```
+```xml
 <dependency>
   <groupId>com.fasterxml.jackson.dataformat</groupId>
   <artifactId>jackson-dataformat-xml</artifactId>
@@ -211,10 +211,84 @@ Since you have added the XML capable converter as a dependency in the previous e
 ## Exercises - Section 2: Exception Handling
 When exceptions happens, Springboot gives you some basic handling out of the box. If errors are client side, it has a variety of handlers that produce meaningful error reponses for that. All other errors result in a 500 error.
 
-As always Springboot lets you take complete control by setting up some error handlers. You can control exceptions directly in the controller using the @ExceptionHandler annotation, or you can create a @ControllerAdvice that handles exceptions across many controllers.
+As always Springboot lets you take complete control by adding up some ExceptionHandlers. You can control exceptions directly in the controller using the @ExceptionHandler annotation, or you can create a @RestControllerAdvice that handles exceptions across many controllers.
 
 The latter approach is recommended.
 
 
+### Exercise 1: ExceptionHandlers in Controllers
+The PersonService throws a PersonCreateException in the create method if the Person object already contains an id. 
+In this exercise you must handle that exception and provide a proper http status code and message.
 
-### Exercise 1: Create a RestController
+Improve the API you made for PersonService to handle this situation. Right now it will just serve a standard White label error. We want to show a nice error message with status code 400 and a descriptive text.
+
+- In the API you made for the PersonService make a method that takes a PersonCreateException as parameter.
+- It must return a String.
+- It must be annotated with ResponseStatus returning a 400 status code.
+- It must be annotated with @ExceptionHandler
+- Restart the application.
+- In Postman create a person where you add an ID to the body of the request.
+
+
+#### Solution
+```java
+@ExceptionHandler
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public String personCreateExceptionHandler(PersonCreateException e) {
+    return e.getMessage();
+}
+```
+
+```text
+curl 'localhost:8080' -d '{"name": "Jonathan","age": 16,"id": 1}' -H "Content-Type: application/json"
+```
+
+
+### Exercise 2: ExceptionHandlers in ControllerAdvices
+In this exercise we will make a class for handling exceptions.
+
+- Make a new class PersonApiControllerAdvice.
+- Annotate it with @RestControllerAdvice
+- Define a method public String handleServiceExceptions(Exception e) 
+- Annotate with @ExceptionHandler that handles all 3 Exceptions in the `dk.lundogbendsen.springbootcourse.api.personservice.service.exceptions` package
+- Delete the ExceptionHandler made in exercise 1.
+- Restart the application.
+- In Postman create a person where you add an ID to the body of the request.
+
+#### Solution
+```java
+@RestControllerAdvice
+public class PersonApiControllerAdvice {
+    @ExceptionHandler({PersonCreateException.class, PersonUpdateException.class, PersonNotFoundException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleException(Exception e) {
+        return e.getMessage();
+    }
+}
+```
+
+### Exercise 3: Exceptions extending ResponseStatusException
+In this exercise you'll handle the create exception directly in the api controller by catching it in a try/catch and throw a new exception extinding the ResponseStatusException.
+
+- Create a new class BadRequestException extending ResponseStatusException.
+- Make a default contructor calling super(HttpStatus.BAD_REQUEST). Optionally make a constructor that takes a String argument that will be the message sent to the client.
+- Make a copy of the create() method and call it create2(). Also update the PostMapping to map /create2.
+- The new method must catch the expected PersonCreateException and instead throw a new BadRequestException.
+- Restart the application.
+- In Postman create a person where you add an ID to the body of the request and call the new method (create2).
+
+#### Solution
+```java
+@PostMapping("create2")
+@ResponseStatus(HttpStatus.CREATED)
+public Person create2(@RequestBody Person person) {
+    final Person created;
+    try {
+        created = personService.create(person);
+    } catch (Exception e) {
+        throw new BadRequestException("Baad request!");
+    }
+    return created;
+}
+```
+

@@ -76,4 +76,27 @@ public class MyRestController {
                 .header("Content-Disposition", "attachment; filename=http-status-codes.png")
                 .body(resource);
     }
+
+    @GetMapping("exception-strategy1")
+    public void exceptionStrategy1() {
+        throw new ExceptionStrategy1Exception();
+    }
+
+    @GetMapping("exception-strategy2")
+    public void exceptionStrategy2() {
+        throw new ExceptionStrategy2Exception();
+    }
+
+    @GetMapping("exception-strategy3")
+    public void exceptionStrategy3() {
+        throw new ExceptionStrategy3Exception(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+    public String exceptionHandlerStrategy1(ExceptionStrategy1Exception e) {
+        return "strategy1";
+    }
+
+
 }
