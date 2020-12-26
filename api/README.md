@@ -292,3 +292,103 @@ public Person create2(@RequestBody Person person) {
 }
 ```
 
+
+## Exercises section 3: Filters and Intercepters
+
+### Exercise 1: Security Filter
+Let's make the Person API a bit more secure by adding a Filter that checks if you are authenticated. Only requests with a header containing an apiToken can pass.
+
+- Make a class SecurityFilter implementing the Filter interface.
+- Implement the doFilter() method.
+- In the doFilter method extract the http header "apiToken" (hint: cast the request parameter to a HttpServletRequest)
+- If the apiToken is NOT present, send an error of 401 with a descriptive message and return (hint: cast the response to HttpServletResponse and use the sendError()).
+- Otherwise call the filter chain.
+- Register the new filter by creating a FilterRegistrationBean that returns a new FilterRegistrationBean with your filter.
+- Restart the application.
+- Run `curl localhost:8080/`
+
+This should result in a whitelabelled 401 response.
+
+- Run `curl localhost:8080/ -H "apiToken: abc"`
+
+Now you should see the list of persons.
+
+#### Solution
+```java
+public class SecurityFilter implements Filter {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        final String apiToken = req.getHeader("apiToken");
+        if (apiToken == null) {
+            System.out.println("Unauthorized");
+            HttpServletResponse res = (HttpServletResponse) response;
+            res.sendError(HttpStatus.UNAUTHORIZED.value(), "You shall not pass!");
+            return;
+        }
+
+        chain.doFilter(request, response);
+    }
+}
+```
+
+```java
+@Bean
+public FilterRegistrationBean<SecurityFilter> filterRegistrationBean() {
+    return new FilterRegistrationBean<>(new SecurityFilter());
+}
+```
+
+### Exercise 2: Make security in an Intercepter
+We will now make the same security check by using an Intercepter.
+
+- Outcomment the @Bean that registers the Filter from exercise 1.
+  
+- Make a new UnauthorizedException class extending the ResponseStatusException that call super with `super(HttpStatus.UNAUTHORIZED, "The request requires an ApiToken")`.
+- Make a new class SecurityIntercepter that implements HandlerIntercepter.
+- Override the preHandle method.
+- If there is no apiToken header, then throw a new UnauthorizedException.
+- Otherwise return true.
+- Make a new class IntercepterConfig that implements WebMvcConfigurer. The new class should be annotated @Component.
+- Implement the addInterceptors() method and add your new SecurityIntercepter.
+- Restart the application.
+- Run `curl localhost:8080/`
+
+This should result in a 401.
+
+- Run `curl localhost:8080/ -H "apiToken: abc"`
+
+
+#### Solution
+```java
+public class UnauthorizedException extends ResponseStatusException {
+    public UnauthorizedException() {
+        super(HttpStatus.UNAUTHORIZED, "The request requires an ApiToken");
+    }
+}
+```
+
+```java
+public class SecurityIntercepter implements HandlerInterceptor {
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        final String apiToken = request.getHeader("apiToken");
+        if (apiToken == null) {
+            System.out.println("Unauthorized");
+            throw new UnauthorizedException();
+        }
+        return true;
+    }
+}
+```
+
+```java
+@Component
+public class IntercepterConfig implements WebMvcConfigurer {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new SecurityIntercepter());
+    }
+}
+```
+
