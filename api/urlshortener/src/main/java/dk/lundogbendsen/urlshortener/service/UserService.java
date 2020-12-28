@@ -1,6 +1,7 @@
 package dk.lundogbendsen.urlshortener.service;
 
 import dk.lundogbendsen.urlshortener.model.User;
+import dk.lundogbendsen.urlshortener.service.exceptions.UserExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
