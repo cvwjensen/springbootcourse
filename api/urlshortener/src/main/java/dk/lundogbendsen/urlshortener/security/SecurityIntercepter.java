@@ -32,7 +32,7 @@ public class SecurityIntercepter implements HandlerInterceptor {
                     return false;
                 }
             } else if (auth.startsWith("Bearer")) {
-                String protectToken = auth.substring(7);
+                String protectToken = auth.substring(7).trim();
                 SecurityContext.setProtectToken(protectToken);
             } else {
                 final String protectToken = request.getHeader("protectToken");
