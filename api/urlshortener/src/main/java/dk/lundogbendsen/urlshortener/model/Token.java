@@ -9,5 +9,5 @@ public class Token {
     String token;
     String protectToken;
     String targetUrl;
-    String userName;
+    User user;
 }

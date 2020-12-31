@@ -22,6 +22,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -51,7 +52,7 @@ class TokenControllerTest_S1 {
 
     @Test
     public void createNonUniqueToken() throws Exception {
-        when(tokenService.create(anyString(), anyString(), anyString(), anyString())).thenThrow(TokenAlreadyExistsException.class);
+        when(tokenService.create(anyString(), anyString(), anyString(), any())).thenThrow(TokenAlreadyExistsException.class);
 
         Map<String, String> token = new HashMap<>();
         token.put("token", "abc");
