@@ -12,10 +12,13 @@ services:
     ports:
       - 6379:6379
 
-  db:
+  mysql:
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testuser
     ports:
       - 3306:3306
 

@@ -1,15 +1,15 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.education.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +22,5 @@ public class Course {
     @ManyToOne
     private Teacher teacher;
     @ManyToMany
-    private List<Student> students;
+    private Set<Student> students = new HashSet<>();
 }

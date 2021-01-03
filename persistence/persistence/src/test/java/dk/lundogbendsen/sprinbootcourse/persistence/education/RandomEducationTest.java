@@ -9,18 +9,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
 
@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // Alternative 3: Use Slice
 @DataJpaTest
-public class EducationTest {
+public class RandomEducationTest {
 
     @Autowired
     CourseRepository courseRepository;
@@ -54,13 +54,13 @@ public class EducationTest {
 
     final Course art = Course.builder().subject("art").points(10)
             .teacher(johnson)
-            .students(List.of(josh, jane, tom)).build();
+            .students(Set.of(josh, jane, tom)).build();
     final Course philosophy = Course.builder().subject("philosophy").points(10)
             .teacher(smith)
-            .students(List.of(tom, anna, jane)).build();
+            .students(Set.of(tom, anna, jane)).build();
     final Course math = Course.builder().subject("math").points(10)
             .teacher(kayne)
-            .students(List.of(josh, tom, anna)).build();
+            .students(Set.of(josh, tom, anna)).build();
 
     final QBExample qbe1 = QBExample.builder().p1("string1").p2(1L).p3(List.of("s1", "s2", "s3")).build();
     final QBExample qbe2 = QBExample.builder().p1("string2").p2(2L).p3(List.of("s4", "s5", "s6")).build();
@@ -68,10 +68,61 @@ public class EducationTest {
 
     @BeforeEach
     public void init() {
+        johnson.setTeaches(Set.of(art));
+        smith.setTeaches(Set.of(philosophy));
+        kayne.setTeaches(Set.of(math));
+
+        josh.setCourses(Set.of(math, art));
+        jane.setCourses(Set.of(art, philosophy));
+        tom.setCourses(Set.of(art, math));
+        anna.setCourses(Set.of(math, philosophy));
+
+        courseRepository.saveAll(List.of(art, philosophy, math));
         studentRepository.saveAll(List.of(josh, anna, jane, tom));
         teacherRepository.saveAll(List.of(johnson, smith, kayne));
-        courseRepository.saveAll(List.of(art, philosophy, math));
         qbExampleRepository.saveAll(List.of(qbe1, qbe2, qbe3));
+    }
+
+    @Test
+    public void findAllCourses() {
+        final List<Course> all = courseRepository.findAll();
+        assertEquals(3, all.size());
+        assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(all.get(0).getSubject(), all.get(1).getSubject(), all.get(2).getSubject()));
+    }
+
+    @Test
+    public void findAllStudentsPaginatedAndSorted() {
+        Pageable page = PageRequest.of(3, 1, Sort.sort(Student.class).by(Student::getName).ascending());
+        Page<Student> all = studentRepository.findAll(page);
+
+        assertEquals(4, all.getTotalElements());
+        assertEquals(4, all.getTotalPages());
+        assertEquals("Tom", all.getContent().get(0).getName());
+    }
+
+
+    @Test
+    public void getOneTest() {
+        Long id = johnson.getId();
+        final Teacher teacher = teacherRepository.getOne(id);
+        assertEquals("Johnson", teacher.getName());
+        assertEquals(1, teacher.getTeaches().size());
+//        assertEquals("art", teacher.getTeaches().get(0).getSubject());
+//        assertEquals(3, teacher.getTeaches().get(0).getStudents().size());
+    }
+
+    @Test
+    public void getOne_NonExistingId_Test() {
+        Long id = 100L;
+        final Teacher teacher = teacherRepository.getOne(id);
+        assertNull(teacher);
+    }
+
+    @Test
+    public void findById_Test() {
+        Long id = johnson.getId();
+        final Optional<Teacher> teacher = teacherRepository.findById(id);
+        assertNull(teacher.isPresent());
     }
 
 
@@ -92,6 +143,7 @@ public class EducationTest {
         final Optional<? extends Course> artCourse = courseRepository.findOne(example);
         assertEquals("philosophy", artCourse.get().getSubject());
     }
+
     @Test
     public void testQueryByExample() {
         final ExampleMatcher partialSubjectMatcher = ExampleMatcher.matchingAny()
