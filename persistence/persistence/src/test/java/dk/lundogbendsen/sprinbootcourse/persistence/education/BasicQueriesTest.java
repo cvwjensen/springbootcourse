@@ -7,13 +7,11 @@ import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.Student
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.TeacherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.*;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -38,8 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class BasicQueriesTest {
 
-    @Autowired
-    EntityManager em;
+    @Autowired EntityManager em;
     @Autowired
     CourseRepository courseRepository;
     @Autowired
@@ -58,13 +55,13 @@ public class BasicQueriesTest {
     final Teacher smith = Teacher.builder().name("Smith").build();
     final Teacher kayne = Teacher.builder().name("Kayne").build();
 
-    final Course art = Course.builder().subject("art").points(10)
+    final Course art = Course.builder().subject("art").points(5)
             .teacher(johnson)
             .students(Set.of(josh, jane, tom)).build();
     final Course philosophy = Course.builder().subject("philosophy").points(10)
             .teacher(smith)
             .students(Set.of(tom, anna, jane)).build();
-    final Course math = Course.builder().subject("math").points(10)
+    final Course math = Course.builder().subject("math").points(15)
             .teacher(kayne)
             .students(Set.of(josh, tom, anna)).build();
 
@@ -130,6 +127,14 @@ public class BasicQueriesTest {
     }
 
     @Test
+    public void navigateFromStudentToTeacher() {
+        final Student student = studentRepository.getOne(tom.getId());
+        final Course course = student.getCourses().stream().filter(c -> c.getSubject().equals("art")).findFirst().get();
+        final Teacher teacher = course.getTeacher();
+        assertEquals("Johnson", teacher.getName());
+    }
+
+    @Test
     public void countCourses() {
         final long count = courseRepository.count();
         assertEquals(3, count);
@@ -190,9 +195,58 @@ public class BasicQueriesTest {
     @Test
     public void createStudent_addToCourses() {
         final Student jim = Student.builder().name("Jim").build();
+        studentRepository.save(jim);
         final Course courseArt = courseRepository.findById(art.getId()).get();
         courseArt.getStudents().add(jim);
+        final Course courseMath = courseRepository.findById(art.getId()).get();
+        courseMath.getStudents().add(jim);
         courseRepository.save(courseArt);
+        courseRepository.flush();
+
+        final Student student = studentRepository.getOne(anna.getId());
+        assertEquals(2, student.getCourses().size());
+    }
+
+    @Test
+    public void removeStudentFromCourse() {
+        final Course course = courseRepository.findById(philosophy.getId()).get();
+        Student student = studentRepository.findById(jane.getId()).get();
+        assertEquals(2, student.getCourses().size());
+        course.getStudents().remove(student);
+        courseRepository.save(course);
+        courseRepository.flush();
+        em.refresh(student);
+        assertEquals(1, student.getCourses().size());
+    }
+
+
+    @Test
+    public void findCoursesByStudent() {
+        final Optional<Student> student = studentRepository.findById(anna.getId());
+        final List<Course> coursesByStudentsContaining = courseRepository.findCoursesByStudents(student.get());
+        assertThat(List.of("philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject()));
+    }
+
+    @Test
+    public void findCoursesByListOfStudents() {
+        final Optional<Student> student1 = studentRepository.findById(anna.getId());
+        final Optional<Student> student2 = studentRepository.findById(tom.getId());
+        final List<Course> coursesByStudentsContaining = courseRepository.findCoursesByStudentsIn(List.of(anna, tom));
+        assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject(), coursesByStudentsContaining.get(2).getSubject()));
+    }
+
+    @Test
+    public void findCoursesWithPointsBetween() {
+        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetween(5, 12);
+        assertEquals(2, coursesByPointsBetween.size());
+    }
+
+    @Test
+    public void findCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
+        Student studentAnna = studentRepository.findById(anna.getId()).get();
+        Teacher teacherSmith = teacherRepository.getOne(smith.getId());
+        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        assertEquals(1, coursesByPointsBetween.size());
     }
 
 }

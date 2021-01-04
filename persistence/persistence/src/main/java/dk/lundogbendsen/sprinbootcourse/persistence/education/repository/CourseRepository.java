@@ -3,6 +3,8 @@ package dk.lundogbendsen.sprinbootcourse.persistence.education.repository;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Course;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Student;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.StudentCourseCount;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Teacher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
+    List<Course> findCoursesByStudents(Student student);
+
     List<Course> findCoursesByStudentsIn(List<Student> students);
 
     @Query(value = "select distinct c.id from Course c inner join c.students s where s.name in :names")
@@ -25,4 +29,5 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
 
     List<Course> findCoursesByPointsBetween(Integer start, Integer end);
+    List<Course> findCoursesByPointsBetweenAndStudentsAndTeacher(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
 }

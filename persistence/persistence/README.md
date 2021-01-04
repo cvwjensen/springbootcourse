@@ -171,6 +171,8 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {}
 ### Exercise 5: Make unit tests (@DataJpaTest) to try out the repositories
 - Make a new test class for testing the repositories
 - Add the three repositories using @Autowired
+- Also add an EntityManager - this is necessary when running unit test to be able to force Hibernate to remove entities from memory and reload them upon request. Otherwise entity relations are not hydrated.
+  Use `@Autowired EntityManager em;`
 - Define the following entities:
 ```java
     final Student josh = Student.builder().name("Josh").build();
@@ -182,17 +184,19 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {}
     final Teacher smith = Teacher.builder().name("Smith").build();
     final Teacher kayne = Teacher.builder().name("Kayne").build();
 
-    final Course art = Course.builder().subject("art").points(10)
+    final Course art = Course.builder().subject("art").points(5)
             .teacher(johnson)
             .students(List.of(josh, jane, tom)).build();
     final Course philosophy = Course.builder().subject("philosophy").points(10)
             .teacher(smith)
             .students(List.of(tom, anna, jane)).build();
-    final Course math = Course.builder().subject("math").points(10)
+    final Course math = Course.builder().subject("math").points(15)
             .teacher(kayne)
             .students(List.of(josh, tom, anna)).build();
 ```
 - Make a test method that saves the entities using the repositores before each test.
+- use courseRepository to flush pending database operations.
+- Use entityManager to clear the loaded entities, so they will be reloaded in the following test, and thereby re-hydrated.
 - Run the test and verify that it succeeds.
 
 #### Solution
@@ -231,6 +235,8 @@ public class EducationTests {
         courseRepository.saveAll(List.of(art, philosophy, math));
         studentRepository.saveAll(List.of(josh, anna, jane, tom));
         teacherRepository.saveAll(List.of(johnson, smith, kayne));
+        courseRepository.flush();
+        em.clear();
     }
 }
 ```
@@ -239,10 +245,11 @@ public class EducationTests {
 The @Test in previous exercise was just for warming up. To see if we setup the entities right. 
 In this exercise you'll convert the test to an initializing method that runs before every test.
 
+
 - Change the annotation to @BeforeEach
 - Change the name to init().
 
-By doing this you now have a solid, wellknown data foundation for coming tests. 
+By doing this you now have a solid, well-known data foundation for coming tests. 
 
 #### Solution
 ```java
@@ -251,6 +258,8 @@ public void init() {
     courseRepository.saveAll(List.of(art, philosophy, math));
     studentRepository.saveAll(List.of(josh, anna, jane, tom));
     teacherRepository.saveAll(List.of(johnson, smith, kayne));
+    courseRepository.flush();
+    em.clear();
 }
 ```
 
@@ -345,16 +354,16 @@ There is another way to get an entity by ID. Use the findById(). It returns an O
 
 Difference to getOne() is that findById is EAGER, whereas the getOne is LAZY. EAGER means that an actual database query is performed immediately, while the LAZY will do it when a property is accessed the first time. It will then throw an EntityNotFoundException if it does not exists.
 
-- Make a test for fetching Teacher Johnson. Use the getOne(johnson.getId()).
-- Assert that the returned value is null assertNull()
+- Make a test for fetching Teacher Johnson. Use the getOne(johnson.findById()).
+- Assert that the returned value is present using the Optional.isPresent()
 
 #### Solution
 ```java
     @Test
-    public void getOne_NonExistingId_Test() {
-        Long id = 100L;
-        final Teacher teacher = teacherRepository.getOne(id);
-        assertNull(teacher);
+    public void findById_Test() {
+        Long id = johnson.getId();
+        final Optional<Teacher> teacher = teacherRepository.findById(id);
+        assertTrue(teacher.isPresent());
     }
 ```
 
@@ -374,6 +383,25 @@ You can count entities using count() method.
     }
 ```
 
+### Exercise 7: Basis Queries - Navigation
+In this exercise we will see how navigation works. We load a Student, find a Course, and from that the Teacher.
+
+- Make a test case for navigation.
+- Load the Student Tom.
+- Get the art Course from Toms courses (Tip: use stream().filter().findFirst())
+- Get the Teacher from that Course.
+- Assert that the Teachers name is Johnson.
+
+#### Solution
+```java
+    @Test
+    public void navigateFromStudentToTeacher() {
+        final Student student = studentRepository.getOne(tom.getId());
+        final Course course = student.getCourses().stream().filter(c -> c.getSubject().equals("art")).findFirst().get();
+        final Teacher teacher = course.getTeacher();
+        assertEquals("Johnson", teacher.getName());
+    }
+```
 ## Modifying operations
 Reading is one thing - updating another. 
 There are some things to consider when updating entitites especially if they are related to other entities.
@@ -397,7 +425,7 @@ We'll try to delete a course in this exercise.
 - use courseRepository.delete() to delete it.
 - use courseRepository.flush() to force Hibernate to execute the queries in the transaction.
  
-Even tough there are a Teacher and some Students associated with the Course, the delete succeeds because the relations are owned by the Course.
+Even tough there is a Teacher and some Students associated with the Course, the delete succeeds because the relations are owned by the Course, and therefore are handled when the Course is deleted.
 
 #### Solution
 ```java
@@ -436,7 +464,7 @@ We'll try to delete a Teacher in this exercise. But this time we will remove ass
 
 - Make a test for deleting the the Teacher Johnson.
 - Load the Teacher Johnson.
-- Update his courses and set the teacher to null.
+- Update his courses by setting their teacher to null.
 - use teacherRepository.delete() to delete it.
 - use teacherRepository.flush() to force Hibernate to execute the queries in the transaction.
  
@@ -474,7 +502,170 @@ Students are in a ManyToMany relationship with Courses. We'll try delete one.
 ### Exercise 5: Add Student and assign to Course
 In this exercise we will add a new Student and put into a Course.
 
-- Make a new test for Creating af Student.
+- Make a new test for Creating a Student (Jim).
 - Load the Art course and add the Student.
 - Load the Math course and add the Student.
+- Save the courses and the student.
+- Flush the course repository to force database write.
+- Load the student using the studentRepository.
+- Assert that the student have 2 courses in his courses collection.
+
+#### Solution
+```java
+    @Test
+    public void createStudent_addToCourses() {
+        final Student jim = Student.builder().name("Jim").build();
+        studentRepository.save(jim);
+        final Course courseArt = courseRepository.findById(art.getId()).get();
+        courseArt.getStudents().add(jim);
+        final Course courseMath = courseRepository.findById(art.getId()).get();
+        courseMath.getStudents().add(jim);
+        courseRepository.save(courseArt);
+        courseRepository.flush();
+
+        final Student student = studentRepository.getOne(anna.getId());
+        assertEquals(2, student.getCourses().size());
+    }
+```
+
+### Exercise 6: Remove Student from Course
+In this exercise we will remove Jane from the Course Philosophy.
+
+- Make a test case for removing a Student from a Course.
+- Load the Course "Philosophy".
+- Load the Student Jane, and assert that she have 2 courses.
+- Remove Jane from the set of Students.
+- Save the Course.
+- Flush.
+- Use EntityManager to refresh the Student (force re-hydratation).
+- Assert that the student now only have 1 course in her list.
+
+#### Solution
+```java
+    @Test
+    public void removeStudentFromCourse() {
+        final Course course = courseRepository.findById(philosophy.getId()).get();
+        Student student = studentRepository.findById(jane.getId()).get();
+        assertEquals(2, student.getCourses().size());
+        course.getStudents().remove(student);
+        courseRepository.save(course);
+        courseRepository.flush();
+        em.refresh(student);
+        assertEquals(1, student.getCourses().size());
+    }
+```
+
+## Customizing the Repositories: Property Expressions
+This is as far as we can get using the repositories out of the box. We got at lot of functionality, but they only cover basic stuff.
+
+Repositories support a other options for querying and updating the database.
+
+In this section we will look at Property Expressions.
+
+Property Expressions are methods you add on the Repository whos naming and signature follow a certain convention.
+
+
+### Exercise 1: find all courses by a Student
+We will use a Property Expression query for finding all courses of a given student.
+
+- Open the CourseRepository class.
+- Add a new method: `List<Course> findCoursesByStudents(Student students);`
+- Make a test that uses the new method for finding the courses of Student Anna.
+- Assert that the list of courses consists of philosophy and math.
+
+#### Solution
+```java
+    List<Course> findCoursesByStudents(Student student);
+```
+
+```java
+    @Test
+    public void testCustomFinders() {
+        final Optional<Student> student = studentRepository.findById(anna.getId());
+        final List<Course> coursesByStudentsContaining = courseRepository.findCoursesByStudents(student.get());
+        assertThat(List.of("philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject()));
+    }
+```
+
+### Exercise 2: find all courses by a a list of Students
+This test is a variation of the previous. But instead of finding courses for 1 student, we will find for a list of students.
+
+- Open the CourseRepository class.
+- Add a new method: `List<Course> findCoursesByStudentsIn(List<Student> students);`
+- Make a test that uses the new method for finding the courses of Student Anna and Tom.
+- Assert that the list of courses consists of art, philosophy and math.
+
+#### Solution
+```java
+    List<Course> findCoursesByStudentsIn(List<Student> students);
+```
+
+```java
+    @Test
+    public void findCoursesByListOfStudents() {
+        final Optional<Student> student1 = studentRepository.findById(anna.getId());
+        final Optional<Student> student2 = studentRepository.findById(tom.getId());
+        final List<Course> coursesByStudentsContaining = courseRepository.findCoursesByStudentsIn(List.of(anna, tom));
+        assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject(), coursesByStudentsContaining.get(2).getSubject()));
+    }
+```
+
+### Exercise 3: Find courses points in a certain range
+In the exercise we will make a finder that works on the basic attribute of an entity.
+
+- Add a method to CourseRepository that finds courses by the points of the course if the point lies between a lower and an upper limit (two Integers) 
+  (use Intellij to help out here. Start by typing "findAllBy" and let Intellij come to help. You can then continue with "PointsBetween" )
+- Make a test case for finding courses by their points.
+- Use the bew method to find all courses with points between 5 and 12.
+- Assert that you get two courses back.
+
+#### Solution
+```java
+    List<Course> findCoursesByPointsBetween(Integer start, Integer end);
+```
+
+```java
+    @Test
+    public void findCoursesWithPointsBetween() {
+        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetween(5, 12);
+        assertEquals(2, coursesByPointsBetween.size());
+    }
+```
+
+
+### Exercise 4: Find By Points, Students and Teacher - and paginate and sort
+In the exercise we will make a method on the courseRepository that work on several properties at once while at the same time paginates and sorts the result.
+
+- Make a new method on courseRepository that is named after Points between, a Student and a Teacher. 
+- Also add a Pagable to the method signatures argument list.
+- Make a test for finding all courses with points between 5 and 12 that is attended by Anna, and tought by Smith. The result should be paginated with page size 1 and sorted ascending by subject.
+
+**Tip:** 
+
+A Pagination object can be constructed like this:
+```java
+PageRequest.of(0,1, Sort.by("subject").ascending())
+```
+
+#### Solution
+```java
+    List<Course> findCoursesByPointsBetweenAndStudentsAndTeacher(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
+```
+
+```java
+    @Test
+    public void findCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
+        Student studentAnna = studentRepository.findById(anna.getId()).get();
+        Teacher teacherSmith = teacherRepository.getOne(smith.getId());
+        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        assertEquals(1, coursesByPointsBetween.size());
+    }
+```
+
+
+## Customizing the Repositories: Custom queries
+As can be seen by previous section, the property expressions are quite flexible. But sometimes the names - while quite logical - gets a bit long and unreadable.
+
+In the section we will investigate the custom queries using the @Query annotation. The Language used in @Query is JPQL, which resembles SQL, but with convenience on top to navigate relations.
+
 
