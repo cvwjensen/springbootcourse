@@ -569,43 +569,43 @@ Property Expressions are methods you add on the Repository whos naming and signa
 We will use a Property Expression query for finding all courses of a given student.
 
 - Open the CourseRepository class.
-- Add a new method: `List<Course> findCoursesByStudents(Student students);`
+- Add a new method: `List<Course> findByStudents(Student student);`
 - Make a test that uses the new method for finding the courses of Student Anna.
 - Assert that the list of courses consists of philosophy and math.
 
 #### Solution
 ```java
-    List<Course> findCoursesByStudents(Student student);
+    List<Course> findByStudents(Student student);
 ```
 
 ```java
     @Test
-    public void testCustomFinders() {
-        final Optional<Student> student = studentRepository.findById(anna.getId());
-        final List<Course> coursesByStudentsContaining = courseRepository.findCoursesByStudents(student.get());
+    public void findCoursesByStudent() {
+        final Student student = studentRepository.findById(anna.getId()).get();
+        final List<Course> coursesByStudentsContaining = courseRepository.findByStudents(student);
         assertThat(List.of("philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject()));
     }
 ```
 
 ### Exercise 2: find all courses by a a list of Students
-This test is a variation of the previous. But instead of finding courses for 1 student, we will find for a list of students.
+This test is a variation of the previous. But instead of finding courses for 1 student, we will find for a list of students. This time we need to ensure that the result only return unique rows by using Distinct.
 
 - Open the CourseRepository class.
-- Add a new method: `List<Course> findCoursesByStudentsIn(List<Student> students);`
+- Add a new method: `List<Course> findDistinctByStudentsIn(List<Student> students);`
 - Make a test that uses the new method for finding the courses of Student Anna and Tom.
 - Assert that the list of courses consists of art, philosophy and math.
 
 #### Solution
 ```java
-    List<Course> findCoursesByStudentsIn(List<Student> students);
+    List<Course> findDistinctByStudentsIn(List<Student> students);
 ```
 
 ```java
     @Test
     public void findCoursesByListOfStudents() {
-        final Optional<Student> student1 = studentRepository.findById(anna.getId());
-        final Optional<Student> student2 = studentRepository.findById(tom.getId());
-        final List<Course> coursesByStudentsContaining = courseRepository.findCoursesByStudentsIn(List.of(anna, tom));
+        final Student student1 = studentRepository.findById(anna.getId()).get();
+        final Student student2 = studentRepository.findById(tom.getId()).get();
+        final List<Course> coursesByStudentsContaining = courseRepository.findDistinctByStudentsIn(List.of(student1, student2));
         assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject(), coursesByStudentsContaining.get(2).getSubject()));
     }
 ```
@@ -668,4 +668,24 @@ As can be seen by previous section, the property expressions are quite flexible.
 
 In the section we will investigate the custom queries using the @Query annotation. The Language used in @Query is JPQL, which resembles SQL, but with convenience on top to navigate relations.
 
+### Exercise 1: rewrite the former property expression query
+To be able to compare solutions, we rewrite the findCoursesByPointsBetweenAndStudentsAndTeacher query using @Query
 
+The JPQL is very similar to SQL. You can use joins to query on relations. This we will do in this case.
+
+
+#### Solution
+```java
+    @Query("select c from Course c inner join c.students s where c.points between ?1 and ?2 and s=?3 and c.teacher=?4")
+    List<Course> listCourses(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
+```
+
+```java
+    @Test
+    public void listCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
+        Student studentAnna = studentRepository.findById(anna.getId()).get();
+        Teacher teacherSmith = teacherRepository.getOne(smith.getId());
+        final List<Course> coursesByPointsBetween = courseRepository.listCourses(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        assertEquals(1, coursesByPointsBetween.size());
+    }
+```

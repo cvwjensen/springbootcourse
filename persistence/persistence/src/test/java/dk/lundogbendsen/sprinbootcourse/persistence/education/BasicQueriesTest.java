@@ -1,17 +1,19 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.education;
 
-import dk.lundogbendsen.sprinbootcourse.persistence.education.model.*;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Course;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Student;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Teacher;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.CourseRepository;
-import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.QBExampleRepository;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.StudentRepository;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.TeacherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -33,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 // Alternative 3: Use Slice
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class BasicQueriesTest {
 
     @Autowired EntityManager em;
@@ -43,8 +45,6 @@ public class BasicQueriesTest {
     StudentRepository studentRepository;
     @Autowired
     TeacherRepository teacherRepository;
-    @Autowired
-    QBExampleRepository qbExampleRepository;
 
     final Student josh = Student.builder().name("Josh").build();
     final Student jane = Student.builder().name("Jane").build();
@@ -65,10 +65,6 @@ public class BasicQueriesTest {
             .teacher(kayne)
             .students(Set.of(josh, tom, anna)).build();
 
-    final QBExample qbe1 = QBExample.builder().p1("string1").p2(1L).p3(List.of("s1", "s2", "s3")).build();
-    final QBExample qbe2 = QBExample.builder().p1("string2").p2(2L).p3(List.of("s4", "s5", "s6")).build();
-    final QBExample qbe3 = QBExample.builder().p1("string3").p2(3L).p3(List.of("s1", "s2", "s6")).build();
-
     @BeforeEach
     public void init() {
         studentRepository.saveAll(List.of(josh, anna, jane, tom));
@@ -76,7 +72,6 @@ public class BasicQueriesTest {
         courseRepository.saveAll(List.of(art, philosophy, math));
         courseRepository.flush();
         em.clear();
-        qbExampleRepository.saveAll(List.of(qbe1, qbe2, qbe3));
     }
 
     @Test
@@ -222,16 +217,16 @@ public class BasicQueriesTest {
 
     @Test
     public void findCoursesByStudent() {
-        final Optional<Student> student = studentRepository.findById(anna.getId());
-        final List<Course> coursesByStudentsContaining = courseRepository.findCoursesByStudents(student.get());
+        final Student student = studentRepository.findById(anna.getId()).get();
+        final List<Course> coursesByStudentsContaining = courseRepository.findByStudents(student);
         assertThat(List.of("philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject()));
     }
 
     @Test
     public void findCoursesByListOfStudents() {
-        final Optional<Student> student1 = studentRepository.findById(anna.getId());
-        final Optional<Student> student2 = studentRepository.findById(tom.getId());
-        final List<Course> coursesByStudentsContaining = courseRepository.findCoursesByStudentsIn(List.of(anna, tom));
+        final Student student1 = studentRepository.findById(anna.getId()).get();
+        final Student student2 = studentRepository.findById(tom.getId()).get();
+        final List<Course> coursesByStudentsContaining = courseRepository.findDistinctByStudentsIn(List.of(student1, student2));
         assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject(), coursesByStudentsContaining.get(2).getSubject()));
     }
 
@@ -246,6 +241,14 @@ public class BasicQueriesTest {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
         Teacher teacherSmith = teacherRepository.getOne(smith.getId());
         final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        assertEquals(1, coursesByPointsBetween.size());
+    }
+
+    @Test
+    public void listCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
+        Student studentAnna = studentRepository.findById(anna.getId()).get();
+        Teacher teacherSmith = teacherRepository.getOne(smith.getId());
+        final List<Course> coursesByPointsBetween = courseRepository.listCourses(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
 

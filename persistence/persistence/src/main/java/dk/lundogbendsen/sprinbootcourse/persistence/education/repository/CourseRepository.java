@@ -10,11 +10,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    List<Course> findCoursesByStudents(Student student);
+    List<Course> findByStudents(Student student);
 
-    List<Course> findCoursesByStudentsIn(List<Student> students);
+    List<Course> findDistinctByStudentsIn(List<Student> students);
 
     @Query(value = "select distinct c.id from Course c inner join c.students s where s.name in :names")
     List<Long> findCourseIdsByStudentNames(@Param("names") List<String> studentNames);
@@ -30,4 +31,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     List<Course> findCoursesByPointsBetween(Integer start, Integer end);
     List<Course> findCoursesByPointsBetweenAndStudentsAndTeacher(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
+    @Query("select c from Course c inner join c.students s where c.points between ?1 and ?2 and s=?3 and c.teacher=?4")
+    List<Course> listCourses(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
 }
