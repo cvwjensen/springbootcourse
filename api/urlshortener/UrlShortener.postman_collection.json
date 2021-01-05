@@ -14,7 +14,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "72dcbca9-9756-4132-be61-2124171477da",
 								"exec": [
 									"var data = JSON.parse(pm.request.body);",
 									"postman.setEnvironmentVariable(\"userName\", data.userName);",
@@ -54,15 +53,6 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"Christian\",\n    \"password\": \"password\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "{{baseUrl}}/user/{{userName}}",
 							"host": [
@@ -76,8 +66,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Token",
@@ -120,7 +109,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3eb73932-b826-41d0-8f45-201dbe16db6b",
 								"exec": [
 									"var data = JSON.parse(pm.request.body);",
 									"postman.setEnvironmentVariable(\"token\", data.token);",
@@ -250,7 +238,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "06b1fcaa-feff-4246-8921-a46a787e8de6",
 								"exec": [
 									"var data = JSON.parse(pm.request.body);",
 									"postman.setEnvironmentVariable(\"protectToken\", data.protectToken);",
@@ -301,8 +288,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Follow",
@@ -334,15 +320,13 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "1f6ef4e7-1caf-48ff-9064-d362e3de210c",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -352,7 +336,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "4cc9995e-b14e-47d4-b5e7-89a01f89e1e0",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -362,20 +345,16 @@
 	],
 	"variable": [
 		{
-			"id": "96216816-3150-4aae-9ad7-9ecd7b98a31a",
 			"key": "baseUrl",
 			"value": "http://localhost:8080"
 		},
 		{
-			"id": "aaae8d9f-5e8e-4f6a-8219-ef4d509421fb",
 			"key": "userName",
 			"value": ""
 		},
 		{
-			"id": "bd959c51-a78f-414b-8cff-9ce764b83680",
 			"key": "password",
 			"value": "password"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
