@@ -252,4 +252,19 @@ public class BasicQueriesTest {
         assertEquals(1, coursesByPointsBetween.size());
     }
 
+    @Test
+    public void findTopStudent_ByCoursePoints() {
+        List<Student> students = studentRepository.findTopStudents(PageRequest.of(0, 10, Sort.by("points").descending()));
+        assertEquals(30, students.get(0).getCourses().stream().mapToInt(Course::getPoints).sum());
+        assertEquals(25, students.get(1).getCourses().stream().mapToInt(Course::getPoints).sum());
+        assertEquals(20, students.get(2).getCourses().stream().mapToInt(Course::getPoints).sum());
+        assertEquals(15, students.get(3).getCourses().stream().mapToInt(Course::getPoints).sum());
+    }
+
+    @Test
+    public void testCustomImplementation() {
+        final List<Student> johnson = teacherRepository.getStudents("Johnson");
+        assertEquals(3, johnson.size());
+    }
+
 }
