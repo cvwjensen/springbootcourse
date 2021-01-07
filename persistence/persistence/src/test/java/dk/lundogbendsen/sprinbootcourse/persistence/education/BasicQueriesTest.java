@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -267,4 +269,12 @@ public class BasicQueriesTest {
         assertEquals(3, johnson.size());
     }
 
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void deleteStudentsByName() {
+        final Student christian = Student.builder().name("Christian").build();
+        studentRepository.save(christian);
+//        studentRepository.delete(christian);
+        studentRepository.deleteAllByName("Christian");
+    }
 }

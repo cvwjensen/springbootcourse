@@ -6,6 +6,7 @@ import dk.lundogbendsen.urlshortener.service.exceptions.UserExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -25,12 +26,14 @@ public class UserService {
         return user;
     }
 
+//    @Transactional
     public void delete(String userName) {
         Optional<User> user = userRepository.findById(userName);
         if (user.isPresent()) {
             tokenService.deleteTokens(user.get());
-            userRepository.delete(user.get());
+            throw new RuntimeException();
         }
+        userRepository.delete(user.get());
     }
 
     public User getUser(String userName) {
