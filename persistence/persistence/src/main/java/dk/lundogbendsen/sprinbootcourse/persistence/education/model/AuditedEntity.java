@@ -1,26 +1,26 @@
-package dk.lundogbendsen.urlshortener.model;
+package dk.lundogbendsen.sprinbootcourse.persistence.education.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
-@Data
-@Builder
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+@Getter
+@Setter
+public abstract class AuditedEntity {
     @Id
-    String username;
-    String password;
+    @GeneratedValue
+    private Long id;
+
     @CreatedDate
     private Date createdDate;
     @LastModifiedDate

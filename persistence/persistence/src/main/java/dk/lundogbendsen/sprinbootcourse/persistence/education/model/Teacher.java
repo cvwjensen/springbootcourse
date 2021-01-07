@@ -12,10 +12,10 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Teacher {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Teacher extends AuditedEntity{
+//    @Id
+//    @GeneratedValue
+//    private Long id;
     private String name;
     @OneToMany(mappedBy = "teacher")
     private Set<Course> teaches = new HashSet<>();

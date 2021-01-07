@@ -15,10 +15,10 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Student {
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Student extends AuditedEntity{
+//    @Id
+//    @GeneratedValue
+//    private Long id;
     private String name;
     @ManyToMany(mappedBy = "students")
     private Set<Course> courses = new HashSet<>();

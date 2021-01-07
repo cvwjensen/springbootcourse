@@ -898,3 +898,126 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 }
 ```
 
+
+## Auditing
+You can extend your Entity model with fields for capturing Who changed/updated a row When.
+
+In this section we are going to explore how this works. We are only working with the When part because the Who part require Spring Security.
+
+### Exercise 1: Add Auditing to the Education Entity model Course
+In this exercise we are going to add timestamps for created and updated.
+
+- On Course Entity model add the following fields:
+  - `@CreatedDate private Date createdAt;` 
+  - `@LastModifiedDate private Date updatedAt;`
+- Annotate the class with `@EntityListeners(AuditingEntityListener.class)`.
+- Finally enable Auditing on application level by adding to the main-class `@EnableJpaAuditing`.
+
+- Make a test case for creating and updating a Course.
+- Make a new Course where you set only the points and subject. No Student or Teacher.
+- Save it and flush it.
+- extract the fields createdAt and updatedAt into two variables.
+- Assert that they are not null.
+
+- Update the points to another value.
+- Save and flush.
+- assert that the createdAt hold the same value as the variable from before.
+- assert that the updatedAt is after the value of the variable from before.
+
+#### Solution
+```java
+    @Test
+    public void createAndUpdateCourse_WatchAuditing() {
+        // Create
+        Course it = Course.builder().subject("it").points(20).build();
+        courseRepository.save(it);
+        courseRepository.flush();
+        final Date createdDate = it.getCreatedDate();
+        final Date updatedDate = it.getUpdatedDate();
+        assertNotNull(createdDate);
+        assertNotNull(updatedDate);
+
+        // Update
+        it.setPoints(10);
+        courseRepository.save(it);
+        courseRepository.flush();
+        assertEquals(createdDate, it.getCreatedDate());
+        assertTrue(it.getUpdatedDate().after(updatedDate));
+    }
+```
+
+### Exercise 2 - Using a Mapped super class to hold common fields
+In this exercise we are going to extract common fields from the Entity model into a class, we will annotate as a `@MappedSuperClass`.
+
+Common fields are:
+- id
+- createdAt
+- updatedAt
+
+**Prepare:**
+- Create this class:
+```java
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+public abstract class AuditedEntity {
+   @Id
+   @GeneratedValue
+   private Long id;
+
+   @CreatedDate
+   private Date created;
+   @LastModifiedDate
+   private Date lastModified;
+}
+```
+- Update the Course, Student and Teacher entitites and remove id, createdAt and updatedAt fields.
+- Let them extend the new class.
+- Run all test test cases to make sure everything still works the same.
+
+#### Solution
+```java
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Course extends AuditedEntity{
+    private String subject;
+    private Integer points;
+    @ManyToOne
+    private Teacher teacher;
+    @ManyToMany
+    private Set<Student> students = new HashSet<>();
+}
+```
+---
+```java
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Teacher extends AuditedEntity{
+    private String name;
+    @OneToMany(mappedBy = "teacher")
+    private Set<Course> teaches = new HashSet<>();
+}
+```
+---
+```java
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Student extends AuditedEntity{
+    private String name;
+    @ManyToMany(mappedBy = "students")
+    private Set<Course> courses = new HashSet<>();
+}
+```

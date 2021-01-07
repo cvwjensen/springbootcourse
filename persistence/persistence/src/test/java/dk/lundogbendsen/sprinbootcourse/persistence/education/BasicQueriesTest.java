@@ -19,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
@@ -276,5 +273,24 @@ public class BasicQueriesTest {
         studentRepository.save(christian);
 //        studentRepository.delete(christian);
         studentRepository.deleteAllByName("Christian");
+    }
+
+    @Test
+    public void createAndUpdateCourse_WatchAuditing() {
+        // Create
+        Course it = Course.builder().subject("it").points(20).build();
+        courseRepository.save(it);
+        courseRepository.flush();
+        final Date createdDate = it.getCreatedDate();
+        final Date updatedDate = it.getUpdatedDate();
+        assertNotNull(createdDate);
+        assertNotNull(updatedDate);
+
+        // Update
+        it.setPoints(10);
+        courseRepository.save(it);
+        courseRepository.flush();
+        assertEquals(createdDate, it.getCreatedDate());
+        assertTrue(it.getUpdatedDate().after(updatedDate));
     }
 }
