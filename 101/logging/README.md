@@ -168,7 +168,7 @@ In this exercise you'll take control by creating a file called `resources/logbac
 - ?Inspect the output - why is there no TraceId?
 - Add TraceId to the logging pattern, restart API and inspect.
 
-### Exercise 6: Logback extensions - use Json encoding
+### Exercise 7: Logback extensions - use Json encoding
 You may want to take control if you for example want to change the output to JSON to be compliant with the centralized logging system, your company is using.
 
 In this exercise you'll update the logback configuration to change the console appender to output json. We are going to use the `LoggingEventCompositeJsonEncoder` to format the log statements into Json. 
@@ -246,7 +246,7 @@ It is also able to read the application.properties to extract information from t
 - Restart the application.
 - ?What happened to the output?
 
-### Exercise 7: Logback - Use Spring profiles to set loglevel
+### Exercise 8: Logback - Use Spring profiles to set loglevel
 The output from the previous exercise is json, which is very nide for a centralised logging system, but unreadable for the human eye.
 
 In this exercise we will take advantage of a Springboot logback extension that allows us to use Spring profiles in the logging configuration.
@@ -328,7 +328,7 @@ We can use the springProfile snippet to help us.
 ```
 
 
-### Exercise 8: ELK - Centralized logging using ELK
+### Exercise 9: ELK - Centralized logging using ELK
 Now we have readable output for our local development, and we have prepared the output to be easily ingestable for a centralized logging system.
 
 Let's setup a centralized Logging System using docker.
@@ -420,7 +420,7 @@ Let's setup a centralized Logging System using docker.
 - Select the `ts` field for timestamp and press Create index pattern.
 - Goto http://localhost:5601/app/discover#/ to explore the index.
 
-### Exercise 8: Distributed Tracing - setup filters in Kibana
+### Exercise 10: Distributed Tracing - setup filters in Kibana
 Every request to the http://localhost/api is now stamped with a TraceId. This makes it possible to extract all the log lines related to a specific request to see what happened. Maybe an error occurred, and you are looking into it. In this way you can find out what happened to the user.
 
 All logs are now sent to ElasticSearch for indexing. In this exercise we will use Kibana to help us out. 
@@ -430,7 +430,7 @@ All logs are now sent to ElasticSearch for indexing. In this exercise we will us
 - The main window now updates to display values for the selected fields. Holding the mouse over a field reveals two icons for filtering on this exact value. Filter on one of the TraceIds.
 
 
-### Exercise 8: Sleuth - Distributed Tracing
+### Exercise 11: Sleuth - Distributed Tracing
 The Distributed Trace Challenge just grows when you get more services. For each service you need gatekeepers when requests arrive and when when it is passed further down stream to another service.
 
 You can think of a service as having many channels IN that starts a process, but also many channels OUT the initiates work in other services. Each of these channels must be guarded like we did with the TracingFilter. For incoming channels, we must copy the TraceId if present, or we must create a new one. For outgoing channels, we must add the TraceId as part of the data we send, so the next service can benefit. 
