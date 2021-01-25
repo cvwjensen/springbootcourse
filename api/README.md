@@ -94,7 +94,7 @@ public String receiveFile(@RequestParam("file") MultipartFile file) throws IOExc
 ```
 
 
-### Exercise 5: Get Header
+### Exercise 6: Get Header
 You can map any header to your method by using the @RequestHeader annotation.
 - Modify the receiveFile method by adding the parameter `@RequestHeader(name = "Content-Type") String contentType`.
 - Print out the content type to the console.
@@ -112,7 +112,7 @@ public String receiveFile(@RequestParam("file") MultipartFile file, @RequestHead
 }
 ```
 
-### Exercise 6: Pojo output
+### Exercise 7: Pojo output
 It is easy to send Strings and primitives like longs and ints. Just let the controller method return them, and they are automatically converted to the response body.
 But it is just as easy to send a complex object like a pojo.
 - Make a method `public Person getPerson()` that creates a Person object and returns it.
@@ -131,7 +131,7 @@ public Person getPerson() {
 }
 ```
 
-### Exercise 7: Complete control using ResponseEntity
+### Exercise 8: Complete control using ResponseEntity
 Sometimes you want to control the response headers in the Controller. In this case you can make the method return a ResponseEntity. 
 The ResponseEntity represents both http status code, headers and content in one object.
 
@@ -160,7 +160,7 @@ public ResponseEntity<Person> getPersonSpecial() {
 }
 ```
 
-### Exercise 8: Download a File
+### Exercise 9: Download a File
 You can use the ResponseEntity to serve files to the client.
 - Make a method `public ResponseEntity<Resource> download(String param) throws IOException`.
 - Annotate with `@GetMapping(path = "/download")`
@@ -189,7 +189,7 @@ You can use the ResponseEntity to serve files to the client.
   }
 ```
 
-### Exercise 9: Client wants XML
+### Exercise 10: Client wants XML
 In http there is a concept of Content Negotiation. The client sends a header "Accept" which declares which formats it can consume. 
 The DispatcherServlet will then try to convert the result of the controller to the accepted format.
 - In order to serve XML, a new dependency must be added to the pom.xml:
@@ -203,7 +203,7 @@ The DispatcherServlet will then try to convert the result of the controller to t
 - Run `curl localhost:8080/person -H "Accept: application/xml`.
 
 
-### Exercise 10: Client sends XML
+### Exercise 11: Client sends XML
 Json is the dominating paradigm of message exchange format on the web. But sometimes the client send XML.
 Since you have added the XML capable converter as a dependency in the previous exercise, you can now receive XML as well: 
 - Run `curl -H "content-type: application/xml" localhost:8080 -d '<Person><firstName>Christian</firstName><lastName>Jensen</lastName></Person>'`

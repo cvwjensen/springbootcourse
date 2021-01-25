@@ -8,7 +8,7 @@
 - Outcomment the @SpringBootApplication annotation.
 - Set the curser on the run method and to extract a variable called context (Ctrl + Alt + V).
 - Set a breakpoint on the line.
-- Run the application (Shift + F10) and use the context to inspect the beans - how many beans are there, and what kinds are they?
+- Debug the application (Shift + F9) and use the context to inspect the beans - how many beans are there, and what kinds are they?
 
 #### Solution:
 ```
