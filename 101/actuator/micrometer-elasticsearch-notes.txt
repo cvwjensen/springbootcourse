@@ -4,10 +4,13 @@ The reason is that the micrometer-metrics index is associated with a template ca
 
 Delete it and recreate it with
 
+(intellij http):
 POST http://localhost:9200/_template/metrics_template
+content-type: application/json
+
 {
   "index_patterns": [
-    "metrics*"
+    "micrometer-metrics*"
   ],
   "mappings": {
     "_source": {

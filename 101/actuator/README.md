@@ -133,16 +133,14 @@ Hit the http://localhost:8080/actuator/info
 
 ### Exercise 1: Enable the RabbitMQ build-in health indicator
 
-Add the `spring-boot-starter-amqp` to the `pom.xml`.
-
-Enable the rabbit health check by adding to the `application.properties`:
-
-`management.health.rabbit.enabled=true`
-
-Restart the application and hit the health endpoint to see system status.
-
-http://localhost:8080/actuator/health
-
+- Add the `spring-boot-starter-amqp` starter to the `pom.xml`.
+- Enable the rabbit health check by adding `management.health.rabbit.enabled=true` to the `application.properties`
+- Restart the application and hit the health endpoint to see system status.
+- Hit: http://localhost:8080/actuator/health
+- What can we do to make the health check report UP?
+```commandline
+docker-compose -f ../../docker-compose.yml up rabbit
+```
 
 ### Exercise 2: Create your own health check: ServiceWindowHealthCheck
 
@@ -152,6 +150,32 @@ Read the service window period from the `application.properties`.
 
 
 #### Solution
-See `101/actuator/src/main/java/dk/lundogbendsen/health/ServiceWindowHealtIndicator.java`
+```java
+@Component
+public class ServiceWindowHealtIndicator implements HealthIndicator {
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.forLanguageTag("DK"));
+    @Value("${app.health.serviceWindowStart}")
+    private String serviceWindowStart;
+    @Value("${app.health.serviceWindowEnd}")
+    private String serviceWindowEnd;
 
+    @SneakyThrows
+    @Override
+    public Health health() {
+        Date start = formatter.parse(serviceWindowStart);
+        Date end = formatter.parse(serviceWindowEnd);
+        final Date now = new Date();
+        boolean inMaintenance = now.after(start) && now.before(end);
+        if (!inMaintenance) {
+            return Health.up().build();
+        }
+        return Health.down()
+                .withDetail("Reason", "In Maintenance period")
+                .withDetail("Start", serviceWindowStart)
+                .withDetail("End", serviceWindowEnd)
+                .build();
+    }
+}
+
+```
 
