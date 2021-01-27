@@ -76,8 +76,7 @@ see 101/actuator/src/main/java/dk/lundogbendsen/health/MailConfig.java
 
 ### Exercise 4: Add a META-INF/build-info.properties and see the build info in the exposed endpoint
 
-Use maven to generate the file by adding the below snippet to the `spring-boot-maven-plugin` in the pom.xml file:
-
+- Use maven to generate the file by adding the below snippet to the `spring-boot-maven-plugin` in the pom.xml file:
 ```
 <executions>
     <execution>
@@ -87,7 +86,7 @@ Use maven to generate the file by adding the below snippet to the `spring-boot-m
     </execution>
 </executions>
 ```
-
+- Open a terminal and rebuild the project using `mvn clean package`.
 
 #### Solution:
 
@@ -111,7 +110,7 @@ Run the `mvn clean package` command.
 Find the build info at http://localhost:8080/actuator/info
 
 
-### Exercise 5: Add Team information to the Info section
+### Exercise 5: Add Team information to the info section
 
 Add team information such as Team name, Contact email, and Team Lead to the info section.
 
@@ -120,6 +119,7 @@ See the info exposed through the Actuator endpoint.
 #### Solution
 Add the following entries to the application.properties:
 ```
+info.myname=christian
 info.team.team-name=Team Alfa-Bravo
 info.team.team-lead=The Boss
 info.team.contact-email=team-alfa-bravo@example.com
@@ -135,6 +135,7 @@ Hit the http://localhost:8080/actuator/info
 
 - Add the `spring-boot-starter-amqp` starter to the `pom.xml`.
 - Enable the rabbit health check by adding `management.health.rabbit.enabled=true` to the `application.properties`
+- Make info available: `management.endpoint.health.show-details=always`.
 - Restart the application and hit the health endpoint to see system status.
 - Hit: http://localhost:8080/actuator/health
 - What can we do to make the health check report UP?
@@ -152,7 +153,7 @@ Read the service window period from the `application.properties`.
 #### Solution
 ```java
 @Component
-public class ServiceWindowHealtIndicator implements HealthIndicator {
+public class ServiceWindowHealthIndicator implements HealthIndicator {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.forLanguageTag("DK"));
     @Value("${app.health.serviceWindowStart}")
     private String serviceWindowStart;

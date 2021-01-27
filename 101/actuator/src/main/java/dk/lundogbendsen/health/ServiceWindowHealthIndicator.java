@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 
 @Component
-public class ServiceWindowHealtIndicator implements HealthIndicator {
+public class ServiceWindowHealthIndicator implements HealthIndicator {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.forLanguageTag("DK"));
     @Value("${app.health.serviceWindowStart}")
     private String serviceWindowStart;
