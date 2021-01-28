@@ -11,7 +11,7 @@ Prerequisite for these exercises is a new Springboot project with the following 
 In this exercise you are going to create 3 domain classes representing Student, Course and Teacher.
 
 A Student has a name and a list of Courses.
-A Course has a subject, a list of Students and a Teacher.
+A Course has a subject, some points, a list of Students and a Teacher.
 A Teacher has a name and a list of Courses.
 
 - Create the 3 domain classes. Use Lombok @Data and @Builder annotation.
@@ -115,7 +115,22 @@ public class Teacher {
 }
 ```
 
-### Exercise 3: Run the application and see the DDL generated
+### Exercise 3: Make repositories for the entity model
+
+- Make 3 repository interfaces named after the 3 entities extending the JpaRepository interface.
+
+#### Solution
+```java
+public interface CourseRepository extends JpaRepository<Course, Long> {}
+```
+```java
+public interface StudentRepository extends JpaRepository<Student, Long> {}
+```
+```java
+public interface TeacherRepository extends JpaRepository<Teacher, Long> {}
+```
+
+### Exercise 4: Run the application and see the DDL generated
 At this point we have an Entity Model, and we now would like to see what DDL is generated. Also notice that Hibernate understands dependencies between tables, and will drop tables "bottoms-up", and create them "top-down".
 
 In order to see the SQL output, add this line to your application configuration:
@@ -153,25 +168,12 @@ Hibernate: alter table teacher_teaches add constraint FK5w66phdtydqm3hg7lki9md8i
 Hibernate: alter table teacher_teaches add constraint FKa3ccrnysoopdf4jtulh9ga2rn foreign key (teacher_id) references teacher
 ```
 
-### Exercise 4: Make repositories for the entity model
-
-- Make 3 repository interfaces named after the 3 entities extending the JpaRepository interface.
-
-#### Solution
-```java
-public interface CourseRepository extends JpaRepository<Course, Long> {}
-```
-```java
-public interface StudentRepository extends JpaRepository<Student, Long> {}
-```
-```java
-public interface TeacherRepository extends JpaRepository<Teacher, Long> {}
-```
 
 ### Exercise 5: Make unit tests (@DataJpaTest) to try out the repositories
 - Make a new test class for testing the repositories
 - Add the three repositories using @Autowired
-- Also add an EntityManager - this is necessary when running unit test to be able to force Hibernate to remove entities from memory and reload them upon request. Otherwise entity relations are not hydrated.
+- Also add an EntityManager - this is necessary when running unit test to be able to force Hibernate to remove entities from memory and reload them upon request. 
+  Otherwise entity relations are not hydrated.
   Use `@Autowired EntityManager em;`
 - Define the following entities:
 ```java
@@ -186,15 +188,15 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {}
 
     final Course art = Course.builder().subject("art").points(5)
             .teacher(johnson)
-            .students(List.of(josh, jane, tom)).build();
+            .students(Set.of(josh, jane, tom)).build();
     final Course philosophy = Course.builder().subject("philosophy").points(10)
             .teacher(smith)
-            .students(List.of(tom, anna, jane)).build();
+            .students(Set.of(tom, anna, jane)).build();
     final Course math = Course.builder().subject("math").points(15)
             .teacher(kayne)
-            .students(List.of(josh, tom, anna)).build();
+            .students(Set.of(josh, tom, anna)).build();
 ```
-- Make a test method that saves the entities using the repositores before each test.
+- Make a test method that saves the entities using the repositores.
 - use courseRepository to flush pending database operations.
 - Use entityManager to clear the loaded entities, so they will be reloaded in the following test, and thereby re-hydrated.
 - Run the test and verify that it succeeds.
@@ -221,13 +223,13 @@ public class EducationTests {
 
     final Course art = Course.builder().subject("art").points(10)
             .teacher(johnson)
-            .students(List.of(josh, jane, tom)).build();
+            .students(Set.of(josh, jane, tom)).build();
     final Course philosophy = Course.builder().subject("philosophy").points(10)
             .teacher(smith)
-            .students(List.of(tom, anna, jane)).build();
+            .students(Set.of(tom, anna, jane)).build();
     final Course math = Course.builder().subject("math").points(10)
             .teacher(kayne)
-            .students(List.of(josh, tom, anna)).build();
+            .students(Set.of(josh, tom, anna)).build();
 
 
     @Test
@@ -588,7 +590,8 @@ We will use a Property Expression query for finding all courses of a given stude
 ```
 
 ### Exercise 2: find all courses by a a list of Students
-This test is a variation of the previous. But instead of finding courses for 1 student, we will find for a list of students. This time we need to ensure that the result only return unique rows by using Distinct.
+This test is a variation of the previous. But instead of finding courses for 1 student, we will find for a list of students. 
+This time we need to ensure that the result only return unique rows by using Distinct.
 
 - Open the CourseRepository class.
 - Add a new method: `List<Course> findDistinctByStudentsIn(List<Student> students);`
