@@ -1,5 +1,6 @@
 package dk.lundogbendsen.urlshortener.security;
 
+
 import dk.lundogbendsen.urlshortener.model.User;
 
 public class SecurityContext {

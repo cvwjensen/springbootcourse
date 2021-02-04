@@ -47,16 +47,16 @@ Follow actions:
 
 
 
-### Step 1: Create Springboot web-project
+### Step 1: Create a naked Springboot project
 
-### Step 2: Create a User service for handling Users
+### Step 2: Create a UserService for handling Users
 - Create a model `User` representing a User with username and password.
 - Create a Service `UserService` with the following methods:
     - `User create(String userName, String password)`
     - `void delete(User user)`
 
 
-### Step 3: Create a Token service for handling Tokens
+### Step 3: Create a TokenService for handling Tokens
 - Create a model `Token` representing a Token with token, targetUrl and User.
 - Create a model `ProtectToken` representing a ProtectToken with token-reference and a protectToken.
 - Create a Service `TokenService` with the following methods:
@@ -79,26 +79,4 @@ Follow actions:
 The TokenService uses an in-memory datastore (a HashMap).
 No Token can be named "token" as it would conflict with the redirection/follow semantics. 
 
-### Step 4: Create an API for handling Users
-Create the following API:
 
-```
-GET /user
-POST /user
-DELETE /user/{username}
-```
-### Step 5: Create an API for handling Tokens
-Create the following API:
-
-```
-GET /token
-POST /token
-PUT /token/{token}
-DELETE /token/{token}
-POST /token/{token}/protect
-```
-
-### Step 6: Create an API for following a token
-Create the following API:
-
-GET /{token}

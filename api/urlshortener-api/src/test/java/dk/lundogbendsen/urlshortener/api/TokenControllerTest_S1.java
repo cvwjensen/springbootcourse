@@ -30,8 +30,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class TokenControllerTest_S1 {
-    @Mock UserService userService;
-    @Mock TokenService tokenService;
+    @Mock
+    UserService userService;
+    @Mock
+    TokenService tokenService;
     @InjectMocks TokenController tokenController;
     @InjectMocks SecurityIntercepter securityIntercepter;
     @InjectMocks ExceptionHandlerAdvicer exceptionHandlerAdvicer;

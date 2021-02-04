@@ -4,7 +4,6 @@ import dk.lundogbendsen.urlshortener.model.User;
 import dk.lundogbendsen.urlshortener.service.TokenService;
 import dk.lundogbendsen.urlshortener.service.UserService;
 import dk.lundogbendsen.urlshortener.service.exceptions.TokenAlreadyExistsException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +24,10 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TokenControllerTest_S4 {
-    @MockBean UserService userService;
-    @MockBean TokenService tokenService;
+    @MockBean
+    UserService userService;
+    @MockBean
+    TokenService tokenService;
     @Autowired TokenController tokenController;
 
     @Autowired

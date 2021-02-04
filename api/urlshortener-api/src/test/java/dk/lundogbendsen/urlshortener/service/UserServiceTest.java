@@ -15,9 +15,11 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-    @Mock TokenService tokenService;
+    @Mock
+    TokenService tokenService;
     @Spy HashMap<String, User> users;
-    @InjectMocks UserService userService;
+    @InjectMocks
+    UserService userService;
     @Captor ArgumentCaptor<User> userArgumentCaptor;
 
     @Test

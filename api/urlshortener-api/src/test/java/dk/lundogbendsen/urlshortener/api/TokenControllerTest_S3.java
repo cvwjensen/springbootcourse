@@ -28,8 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class TokenControllerTest_S3 {
-    @MockBean UserService userService;
-    @MockBean TokenService tokenService;
+    @MockBean
+    UserService userService;
+    @MockBean
+    TokenService tokenService;
     @Autowired TokenController tokenController;
 
     @Autowired MockMvc mvc;
