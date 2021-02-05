@@ -17,7 +17,7 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public String create(@RequestBody JsonNode body) {
-        final String userName = body.get("userName").asText();
+        final String userName = body.get("username").asText();
         final String password = body.get("password").asText();
         final User user = userService.create(userName, password);
         return userName;
