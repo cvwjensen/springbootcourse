@@ -36,7 +36,7 @@ public class PersonController {
         final Person created;
         try {
             created = personService.create(person);
-        } catch (Exception e) {
+        } catch (PersonCreateException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found", e);
         }
         return created;
