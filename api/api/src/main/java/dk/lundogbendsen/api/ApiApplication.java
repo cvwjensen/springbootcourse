@@ -14,7 +14,7 @@ public class ApiApplication {
         SpringApplication.run(ApiApplication.class, args);
     }
 
-    @Bean
+//    @Bean
     public FilterRegistrationBean<SecurityFilter> registrationBean() {
         final FilterRegistrationBean<SecurityFilter> securityFilterFilterRegistrationBean = new FilterRegistrationBean<>(new SecurityFilter());
         securityFilterFilterRegistrationBean.addUrlPatterns("/person/*", "/admin/");

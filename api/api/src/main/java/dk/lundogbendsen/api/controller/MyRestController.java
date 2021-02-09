@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -89,7 +90,8 @@ public class MyRestController {
 
     @GetMapping("exception-strategy3")
     public void exceptionStrategy3() {
-        throw new ExceptionStrategy3Exception(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
+        // This exception will be used for setting properties of the White-label error (status, message, trace)
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not Found", new RuntimeException("PersonNotFound"));
     }
 
     @ExceptionHandler

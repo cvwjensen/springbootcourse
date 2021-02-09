@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class PersonController {
         try {
             created = personService.create(person);
         } catch (Exception e) {
-            throw new BadRequestException("Baad request!");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found", e);
         }
         return created;
     }

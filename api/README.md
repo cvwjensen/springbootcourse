@@ -208,8 +208,15 @@ Json is the dominating paradigm of message exchange format on the web. But somet
 Since you have added the XML capable converter as a dependency in the previous exercise, you can now receive XML as well: 
 - Run `curl -H "content-type: application/xml" localhost:8080 -d '<Person><firstName>Christian</firstName><lastName>Jensen</lastName></Person>'`
 
+
+
+
+
+
+
 ## Exercises - Section 2: Exception Handling
-When exceptions happens, Springboot gives you some basic handling out of the box. If errors are client side, it has a variety of handlers that produce meaningful error reponses for that. All other errors result in a 500 error.
+When exceptions happens, Springboot gives you some basic handling out of the box. 
+If errors are client side, it has a variety of handlers that produce meaningful error reponses for that. All other errors result in a 500 error.
 
 As always Springboot lets you take complete control by adding up some ExceptionHandlers. You can control exceptions directly in the controller using the @ExceptionHandler annotation, or you can create a @RestControllerAdvice that handles exceptions across many controllers.
 
@@ -270,10 +277,11 @@ public class PersonApiControllerAdvice {
 ### Exercise 3: Exceptions extending ResponseStatusException
 In this exercise you'll handle the create exception directly in the api controller by catching it in a try/catch and throw a new exception extinding the ResponseStatusException.
 
-- Create a new class BadRequestException extending ResponseStatusException.
-- Make a default contructor calling super(HttpStatus.BAD_REQUEST). Optionally make a constructor that takes a String argument that will be the message sent to the client.
 - Make a copy of the create() method and call it create2(). Also update the PostMapping to map /create2.
-- The new method must catch the expected PersonCreateException and instead throw a new BadRequestException.
+- The new method must catch the expected PersonCreateException and instead throw a new ResponseStatusException:
+    - Status code = 404
+    - Message = Person not Found.
+    - exception included.
 - Restart the application.
 - In Postman create a person where you add an ID to the body of the request and call the new method (create2).
 
@@ -292,11 +300,57 @@ public Person create2(@RequestBody Person person) {
 }
 ```
 
+### Exercise 4: Make your own ErrorController
+Sometimes you need special handling of uncaught exceptions in your application. It could be that you want to notify Operations immediately about it.
+
+You can take over from the BasicErrorController by making your own Controller and map it to /error.
+
+If you do so, the Autoconfiguration will back off and not setup the BasicErrorController.
+
+- Make a new class, MyErrorController, and annotate it `@RestController` and `@RequestMapping("/error")`.
+- Implement the `ErrorController` interface.
+- Let the `getErrorPath()` return "/error".  
+- Make a method `public ResponseEntity<Map<String, Object>> myErrorHandler(ServletWebRequest webRequest)`.
+
+The ServletWebRequest webRequest is a handle to the new request created by the Webserver when the DispatcherServlet has given up and asks for the error page. 
+It includes a reference to the original request, where the DispatcherServlet has put a lot of attribute regarding the Exception, including the StackTrace.
+
+- Pull out the exception attributes from the request with this snippet:
+```java
+final DefaultErrorAttributes defaultErrorAttributes = new DefaultErrorAttributes();
+final Map<String, Object> errorAttributes = defaultErrorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.of(ErrorAttributeOptions.Include.STACK_TRACE));
+```
+- Print out the errorAttributes. This is where you could notify your operations about details of the uncaught exception.
+- Return a Map with the message from the "error" key in the errorAttributes. This is where the BasicErrorController normally would create its WhiteLabel Error.
+
+#### Solution
+```java
+@RestController
+@RequestMapping("/error")
+public class MyErrorController implements ErrorController {
+    @Override
+    public String getErrorPath() {
+        return "/error";
+    }
+
+    @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+    @GetMapping
+    public Map<String, Object> handleError(ServletWebRequest webRequest) {
+        final DefaultErrorAttributes defaultErrorAttributes = new DefaultErrorAttributes();
+        final Map<String, Object> errorAttributes = defaultErrorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.of(ErrorAttributeOptions.Include.STACK_TRACE));
+        System.out.println("errorAttributes = " + errorAttributes);
+        return Map.of("Message", errorAttributes.get("error"));
+    }
+}
+```
+
+
 
 ## Exercises section 3: Filters and Intercepters
 
 ### Exercise 1: Security Filter
-Let's make the Person API a bit more secure by adding a Filter that checks if you are authenticated. Only requests with a header containing an apiToken can pass.
+Let's make the Person API a bit more secure by adding a Filter that checks if you are authenticated. 
+Only requests with a header containing an apiToken can pass.
 
 - Make a class SecurityFilter implementing the Filter interface.
 - Implement the doFilter() method.
