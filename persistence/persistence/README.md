@@ -265,6 +265,13 @@ public void init() {
 }
 ```
 
+
+
+
+
+
+
+
 ## Queries
 
 We now have a test class setup with test data we can use for experimenting with queries.
@@ -557,6 +564,11 @@ In this exercise we will remove Jane from the Course Philosophy.
     }
 ```
 
+
+
+
+
+
 ## Customizing the Repositories: Property Expressions
 This is as far as we can get using the repositories out of the box. We got at lot of functionality, but they only cover basic stuff.
 
@@ -666,12 +678,17 @@ PageRequest.of(0,1, Sort.by("subject").ascending())
 ```
 
 
+
+
+
+
+
 ## Customizing the Repositories: Custom queries
 As can be seen by previous section, the property expressions are quite flexible. But sometimes the names - while quite logical - gets a bit long and unreadable.
 
 In the section we will investigate the custom queries using the @Query annotation. The Language used in @Query is JPQL, which resembles SQL, but with convenience on top to navigate relations.
 
-### Exercise 1: rewrite the former property expression query
+### Exercise 1: Find By Points, Students and Teacher - and paginate and sort - with @Query
 To be able to compare solutions, we rewrite the findCoursesByPointsBetweenAndStudentsAndTeacher query using @Query
 
 The JPQL is very similar to SQL. You can use joins to query on relations. This we will do in this case.
@@ -728,6 +745,9 @@ In this exercise we will find students and order them by how many points their c
         assertEquals(15, students.get(3).getCourses().stream().mapToInt(Course::getPoints).sum());
     }
 ```
+
+
+
 
 
 ## Custom implementations of Repository Methods
