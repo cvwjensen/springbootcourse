@@ -17,9 +17,10 @@ public class PropertiesApplication {
     }
 
     @Bean
-    public CommandLineRunner demo(AppConfiguration appConfiguration) {
+    public CommandLineRunner demo(AppConfigValue appConfigValue, AppConfigProperties appConfigProperties) {
         return args -> {
-            logger.info("Current AppConfiguration: {}", appConfiguration);
+            logger.info("Current AppConfiguration: {}", appConfigValue);
+            logger.info("Current AppConfigProperties: {}", appConfigProperties.databaseEndpoint);
         };
     }
 }

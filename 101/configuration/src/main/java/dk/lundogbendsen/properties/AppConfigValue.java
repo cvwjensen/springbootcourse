@@ -1,31 +1,17 @@
 package dk.lundogbendsen.properties;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
-public class AppConfiguration {
+@Component
+public class AppConfigValue {
     @Value("${app.name:NoName}")
     public String appName;
 
     @Value("${app.configIdentifier:Default}")
     public String configurationId;
-
-    public String getConfigurationId() {
-        return configurationId;
-    }
-
-    public void setConfigurationId(String configurationId) {
-        this.configurationId = configurationId;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
 
     @Override
     public String toString() {
