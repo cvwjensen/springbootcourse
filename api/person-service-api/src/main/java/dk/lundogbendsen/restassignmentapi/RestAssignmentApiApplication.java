@@ -13,13 +13,4 @@ public class RestAssignmentApiApplication {
 		SpringApplication.run(RestAssignmentApiApplication.class, args);
 	}
 
-	@Bean
-	public PersonService personService() {
-		return new PersonService();
-	}
-
-//	@Bean
-	public FilterRegistrationBean<SecurityFilter> filterRegistrationBean() {
-		return new FilterRegistrationBean<>(new SecurityFilter());
-	}
 }
