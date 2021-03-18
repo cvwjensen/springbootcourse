@@ -97,7 +97,7 @@ public class MyRestController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
     public String exceptionHandlerStrategy1(ExceptionStrategy1Exception e) {
-        return "strategy1";
+        return "strategy1 from LOCAL HANDLER";
     }
 
 
