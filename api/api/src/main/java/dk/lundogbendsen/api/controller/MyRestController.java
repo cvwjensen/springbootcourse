@@ -1,6 +1,7 @@
 package dk.lundogbendsen.api.controller;
 
 import dk.lundogbendsen.api.model.Person;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 @RestController
+@Slf4j
 public class MyRestController {
     @GetMapping
     public String helloWorld(@RequestParam String message) {
@@ -80,6 +82,7 @@ public class MyRestController {
 
     @GetMapping("exception-strategy1")
     public void exceptionStrategy1() {
+        log.debug("In Controller - I'll throw an exception");
         throw new ExceptionStrategy1Exception();
     }
 
@@ -97,6 +100,7 @@ public class MyRestController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
     public String exceptionHandlerStrategy1(ExceptionStrategy1Exception e) {
+        log.debug("In ExceptionHandler - I'll take care of that exception");
         return "strategy1 from LOCAL HANDLER";
     }
 

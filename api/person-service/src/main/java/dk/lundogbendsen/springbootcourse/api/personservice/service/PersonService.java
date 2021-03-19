@@ -3,6 +3,8 @@ package dk.lundogbendsen.springbootcourse.api.personservice.service;
 
 import dk.lundogbendsen.springbootcourse.api.personservice.model.Person;
 import dk.lundogbendsen.springbootcourse.api.personservice.service.exceptions.*;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
