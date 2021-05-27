@@ -10,8 +10,9 @@
 
     <properties>
         <java.version>15</java.version>
+        <maven.compiler.target>15</maven.compiler.target>
+        <maven.compiler.source>15</maven.compiler.source>
     </properties>
-
     <dependencies>
 
 
