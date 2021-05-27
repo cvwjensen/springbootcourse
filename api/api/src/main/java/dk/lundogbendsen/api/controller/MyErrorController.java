@@ -15,7 +15,6 @@ import java.util.Map;
 //@RestController
 //@RequestMapping("/error")
 public class MyErrorController implements ErrorController {
-    @Override
     public String getErrorPath() {
         return "/error";
     }
