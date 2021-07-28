@@ -101,11 +101,9 @@ public void createNonUniqueUserTest() {
     @Test
     public void deleteUserTest() {
         userService.create("user1", "password1");
-        User user = userService.getUser("user1");
-        assertNotNull(user);
+        assertNotNull(userService.getUser("user1"));
         userService.delete("user1");
-        User userAfterDelete = userService.getUser("user1");
-        assertNull(userAfterDelete);
+        assertThrows(UserNotFoundException.class, () -> userService.getUser("user1"));
     }
 ```
 - ? When you run the test, why does it fail with a NullPointerException?

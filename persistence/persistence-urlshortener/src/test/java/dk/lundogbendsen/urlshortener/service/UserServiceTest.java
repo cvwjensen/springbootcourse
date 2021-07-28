@@ -13,8 +13,8 @@ class UserServiceTest {
 
     @Test
     public void createUserTest() {
-        final User user = userService.create("user1", "password1");
-        final User getUser = userService.getUser("user1");
-        assertEquals("password1", getUser.getPassword());
+        final User user = userService.create("user", "password");
+        final User getUser = userService.getUser("user");
+        assertEquals("password", getUser.getPassword());
     }
 }

@@ -1,13 +1,18 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.gamer;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Gamer {
     @Id
     @GeneratedValue

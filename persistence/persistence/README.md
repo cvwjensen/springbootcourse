@@ -10,9 +10,9 @@ Prerequisite for these exercises is a new Springboot project with the following 
 ### Exercise 1: create a Domain model for the Education case
 In this exercise you are going to create 3 domain classes representing Student, Course and Teacher.
 
-A Student has a name and a list of Courses.
-A Course has a subject, some points, a list of Students and a Teacher.
-A Teacher has a name and a list of Courses.
+A Student has a name and a set of Courses.
+A Course has a subject, some points, a set of Students and a Teacher.
+A Teacher has a name and a set of Courses.
 
 - Create the 3 domain classes. Use Lombok @Data and @Builder annotation.
 
@@ -140,10 +140,7 @@ In order to see the SQL output, add this line to your application configuration:
 Then run the application and inspect the logging. Notice how it starts out dropping any table if it exists. It cleans everything up and starts out fresh.
 This is very nice in the development phase on your local machine where you make a lot of changes. But when the Entity model starts stabilizing or when you deploy to a test/prod environment, you probably don't want the application to wipe the database on every start. 
 
-Since Hibernate is the implementation underneath JPA in this setup, you control DDL behaviour with this configuration:
-
-`spring.jpa.hibernate.ddl-auto=none`
-
+You can set **spring.jpa.hibernate.ddl-auto** explicitly and the standard Hibernate property values are _none, validate, update, create-drop_. Spring Boot chooses a default value for you based on whether it thinks **your database is embedded (default create-drop)** or not (default none). An embedded database is detected by looking at the Connection type: hsqldb, h2 and derby are embedded, the rest are not. Be careful when switching from in-memory to a “real” database that you don’t make assumptions about the existence of the tables and data in the new platform. You either have to set ddl-auto explicitly, or use one of the other mechanisms to initialize the database.
 
 
 #### Solution
@@ -234,9 +231,9 @@ public class EducationTests {
 
     @Test
     public void createAllAssociations() {
-        courseRepository.saveAll(List.of(art, philosophy, math));
-        studentRepository.saveAll(List.of(josh, anna, jane, tom));
-        teacherRepository.saveAll(List.of(johnson, smith, kayne));
+        courseRepository.saveAll(Set.of(art, philosophy, math));
+        studentRepository.saveAll(Set.of(josh, anna, jane, tom));
+        teacherRepository.saveAll(Set.of(johnson, smith, kayne));
         courseRepository.flush();
         em.clear();
     }
@@ -257,9 +254,9 @@ By doing this you now have a solid, well-known data foundation for coming tests.
 ```java
 @BeforeEach
 public void init() {
-    courseRepository.saveAll(List.of(art, philosophy, math));
-    studentRepository.saveAll(List.of(josh, anna, jane, tom));
-    teacherRepository.saveAll(List.of(johnson, smith, kayne));
+    courseRepository.saveAll(Set.of(art, philosophy, math));
+    studentRepository.saveAll(Set.of(josh, anna, jane, tom));
+    teacherRepository.saveAll(Set.of(johnson, smith, kayne));
     courseRepository.flush();
     em.clear();
 }
@@ -287,7 +284,7 @@ In this exercise we will familiarize our self with the queries offered by the re
 ```java
     @Test
     public void findAllCourses() {
-        final List<Course> all = courseRepository.findAll();
+        final Set<Course> all = courseRepository.findAll();
         assertEquals(3, all.size());
         assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(all.get(0).getSubject(), all.get(1).getSubject(), all.get(2).getSubject()));
     }
@@ -583,20 +580,20 @@ Property Expressions are methods you add on the Repository whos naming and signa
 We will use a Property Expression query for finding all courses of a given student.
 
 - Open the CourseRepository class.
-- Add a new method: `List<Course> findByStudents(Student student);`
+- Add a new method: `Set<Course> findByStudents(Student student);`
 - Make a test that uses the new method for finding the courses of Student Anna.
 - Assert that the list of courses consists of philosophy and math.
 
 #### Solution
 ```java
-    List<Course> findByStudents(Student student);
+    Set<Course> findByStudents(Student student);
 ```
 
 ```java
     @Test
     public void findCoursesByStudent() {
         final Student student = studentRepository.findById(anna.getId()).get();
-        final List<Course> coursesByStudentsContaining = courseRepository.findByStudents(student);
+        final Set<Course> coursesByStudentsContaining = courseRepository.findByStudents(student);
         assertThat(List.of("philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject()));
     }
 ```
@@ -606,13 +603,13 @@ This test is a variation of the previous. But instead of finding courses for 1 s
 This time we need to ensure that the result only return unique rows by using Distinct.
 
 - Open the CourseRepository class.
-- Add a new method: `List<Course> findDistinctByStudentsIn(List<Student> students);`
+- Add a new method: `Set<Course> findDistinctByStudentsIn(Set<Student> students);`
 - Make a test that uses the new method for finding the courses of Student Anna and Tom.
 - Assert that the list of courses consists of art, philosophy and math.
 
 #### Solution
 ```java
-    List<Course> findDistinctByStudentsIn(List<Student> students);
+    Set<Course> findDistinctByStudentsIn(Set<Student> students);
 ```
 
 ```java
@@ -620,7 +617,7 @@ This time we need to ensure that the result only return unique rows by using Dis
     public void findCoursesByListOfStudents() {
         final Student student1 = studentRepository.findById(anna.getId()).get();
         final Student student2 = studentRepository.findById(tom.getId()).get();
-        final List<Course> coursesByStudentsContaining = courseRepository.findDistinctByStudentsIn(List.of(student1, student2));
+        final Set<Course> coursesByStudentsContaining = courseRepository.findDistinctByStudentsIn(List.of(student1, student2));
         assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject(), coursesByStudentsContaining.get(2).getSubject()));
     }
 ```
@@ -636,13 +633,13 @@ In the exercise we will make a finder that works on the basic attribute of an en
 
 #### Solution
 ```java
-    List<Course> findCoursesByPointsBetween(Integer start, Integer end);
+    Set<Course> findCoursesByPointsBetween(Integer start, Integer end);
 ```
 
 ```java
     @Test
     public void findCoursesWithPointsBetween() {
-        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetween(5, 12);
+        final Set<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetween(5, 12);
         assertEquals(2, coursesByPointsBetween.size());
     }
 ```
@@ -664,7 +661,7 @@ PageRequest.of(0,1, Sort.by("subject").ascending())
 
 #### Solution
 ```java
-    List<Course> findCoursesByPointsBetweenAndStudentsAndTeacher(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
+    Set<Course> findCoursesByPointsBetweenAndStudentsAndTeacher(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
 ```
 
 ```java
@@ -672,7 +669,7 @@ PageRequest.of(0,1, Sort.by("subject").ascending())
     public void findCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
         Teacher teacherSmith = teacherRepository.getOne(smith.getId());
-        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        final Set<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
 ```
@@ -701,7 +698,7 @@ The JPQL is very similar to SQL. You can use joins to query on relations. This w
 #### Solution
 ```java
     @Query("select c from Course c inner join c.students s where c.points between ?1 and ?2 and s=?3 and c.teacher=?4")
-    List<Course> listCourses(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
+    Set<Course> listCourses(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
 ```
 
 ```java
@@ -709,7 +706,7 @@ The JPQL is very similar to SQL. You can use joins to query on relations. This w
     public void listCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
         Teacher teacherSmith = teacherRepository.getOne(smith.getId());
-        final List<Course> coursesByPointsBetween = courseRepository.listCourses(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        final Set<Course> coursesByPointsBetween = courseRepository.listCourses(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
 ```
@@ -732,13 +729,13 @@ In this exercise we will find students and order them by how many points their c
 #### Solution
 ```java
     @Query("select s, sum(c.points) as points from Student s inner join s.courses c group by s")
-    List<Student> findTopStudents(Pageable pageable);
+    Set<Student> findTopStudents(Pageable pageable);
 ```
 
 ```java
     @Test
     public void findTopStudent_ByCoursePoints() {
-        List<Student> students = studentRepository.findTopStudents(PageRequest.of(0, 10, Sort.by("points").descending()));
+        Set<Student> students = studentRepository.findTopStudents(PageRequest.of(0, 10, Sort.by("points").descending()));
         assertEquals(30, students.get(0).getCourses().stream().mapToInt(Course::getPoints).sum());
         assertEquals(25, students.get(1).getCourses().stream().mapToInt(Course::getPoints).sum());
         assertEquals(20, students.get(2).getCourses().stream().mapToInt(Course::getPoints).sum());
@@ -767,7 +764,7 @@ By convention the Spring looks for an implementation of the interface by looking
 
 
 - Make a new Interface called `TeacherRepositoryCustom`.
-- Add a method `List<Student> getStudentNames(String teacherName)`.
+- Add a method `Set<Student> getStudentNames(String teacherName)`.
 ---
 - Make a new class `TeacherRepositoryCustomImpl` - named excatly like the repository with the 'Impl' postfix.
 - Implement the `TeacherRepositoryCustom` interface.
@@ -786,7 +783,7 @@ By convention the Spring looks for an implementation of the interface by looking
 _Make the new interface:_
 ```java
 public interface TeacherRepositoryCustom {
-    List<Student> getStudents(String teacherName);
+    Set<Student> getStudents(String teacherName);
 }
 ```
 
@@ -799,7 +796,7 @@ public class TeacherRepositoryCustomImpl implements TeacherRepositoryCustom {
     EntityManager entityManager;
 
     @Override
-    public List<Student> getStudents(String teacherName) {
+    public Set<Student> getStudents(String teacherName) {
         final Query query = entityManager.createQuery("select s from Course c inner join c.students s where c.teacher.name=:name", Student.class);
         query.setParameter("name", teacherName);
         return query.getResultList();
@@ -820,7 +817,7 @@ _Use the new methods._
 ```java
 @Test
 public void testCustomImplementation() {
-    final List<Student> johnson = teacherRepository.getStudents("Johnson");
+    final Set<Student> johnson = teacherRepository.getStudents("Johnson");
     assertEquals(3, johnson.size());
 }
 ```
