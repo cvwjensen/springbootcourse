@@ -6,6 +6,7 @@ Prerequisite for these exercises is a new Springboot project with the following 
 
 - spring-boot-starter-data-jpa
 - h2 database
+- (lombok)
 
 ### Exercise 1: create a Domain model for the Education case
 In this exercise you are going to create 3 domain classes representing Student, Course and Teacher.
@@ -14,7 +15,7 @@ A Student has a name and a set of Courses.
 A Course has a subject, some points, a set of Students and a Teacher.
 A Teacher has a name and a set of Courses.
 
-- Create the 3 domain classes. Use Lombok @Data and @Builder annotation.
+- Create the 3 domain classes. Use Lombok annotations to define getters and setters etc.
 
 #### Solution
 ```java
@@ -106,12 +107,12 @@ public class Student {
 @NoArgsConstructor
 @AllArgsConstructor
 public class Teacher {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String name;
-    @OneToMany
-    private Set<Course> teaches;
+  @Id
+  @GeneratedValue
+  private Long id;
+  private String name;
+  @OneToMany(mappedBy = "teacher")
+  private Set<Course> teaches = new HashSet<>();
 }
 ```
 
@@ -586,14 +587,14 @@ We will use a Property Expression query for finding all courses of a given stude
 
 #### Solution
 ```java
-    Set<Course> findByStudents(Student student);
+    List<Course> findByStudents(Student student);
 ```
 
 ```java
     @Test
     public void findCoursesByStudent() {
         final Student student = studentRepository.findById(anna.getId()).get();
-        final Set<Course> coursesByStudentsContaining = courseRepository.findByStudents(student);
+        final List<Course> coursesByStudentsContaining = courseRepository.findByStudents(student);
         assertThat(List.of("philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject()));
     }
 ```
@@ -609,7 +610,7 @@ This time we need to ensure that the result only return unique rows by using Dis
 
 #### Solution
 ```java
-    Set<Course> findDistinctByStudentsIn(Set<Student> students);
+    List<Course> findDistinctByStudentsIn(Set<Student> students);
 ```
 
 ```java
@@ -617,7 +618,7 @@ This time we need to ensure that the result only return unique rows by using Dis
     public void findCoursesByListOfStudents() {
         final Student student1 = studentRepository.findById(anna.getId()).get();
         final Student student2 = studentRepository.findById(tom.getId()).get();
-        final Set<Course> coursesByStudentsContaining = courseRepository.findDistinctByStudentsIn(List.of(student1, student2));
+        final List<Course> coursesByStudentsContaining = courseRepository.findDistinctByStudentsIn(List.of(student1, student2));
         assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(coursesByStudentsContaining.get(0).getSubject(), coursesByStudentsContaining.get(1).getSubject(), coursesByStudentsContaining.get(2).getSubject()));
     }
 ```
@@ -633,13 +634,13 @@ In the exercise we will make a finder that works on the basic attribute of an en
 
 #### Solution
 ```java
-    Set<Course> findCoursesByPointsBetween(Integer start, Integer end);
+    List<Course> findCoursesByPointsBetween(Integer start, Integer end);
 ```
 
 ```java
     @Test
     public void findCoursesWithPointsBetween() {
-        final Set<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetween(5, 12);
+        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetween(5, 12);
         assertEquals(2, coursesByPointsBetween.size());
     }
 ```
@@ -661,7 +662,7 @@ PageRequest.of(0,1, Sort.by("subject").ascending())
 
 #### Solution
 ```java
-    Set<Course> findCoursesByPointsBetweenAndStudentsAndTeacher(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
+    List<Course> findCoursesByPointsBetweenAndStudentsAndTeacher(Integer start, Integer end, Student student, Teacher teacher, Pageable pageable);
 ```
 
 ```java
@@ -669,7 +670,7 @@ PageRequest.of(0,1, Sort.by("subject").ascending())
     public void findCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
         Teacher teacherSmith = teacherRepository.getOne(smith.getId());
-        final Set<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
 ```
