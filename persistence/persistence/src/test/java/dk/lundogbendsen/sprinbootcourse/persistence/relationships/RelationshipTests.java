@@ -1,21 +1,26 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.relationships;
 
-import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Department;
-import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Employee;
-import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Rifle;
-import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Soldier;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.*;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.CourseRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import javax.persistence.EntityManager;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 @DataJpaTest
 public class RelationshipTests {
     @Autowired
     EntityManager entityManager;
+
+    @Autowired
+    CourseRepository courseRepository;
 
     @Test
     public void oneToMany() {
@@ -33,16 +38,140 @@ public class RelationshipTests {
     }
 
     @Test
-    public void oneToOne() {
+    public void oneToOne_not_enforced() {
+        // When both entities have their own ONE relation and their own ID,
+        // this is really just a special case of ONE-TO-MANY. No enforcement.
+        // This is allowed: R1 -> S1 -> R2
+        Soldier soldier = new Soldier();
+        Rifle rifle1 = new Rifle();
+        Rifle rifle2 = new Rifle();
+        rifle1.setSoldier(soldier);
+        rifle2.setSoldier(soldier);
+        entityManager.persist(soldier);
+        entityManager.persist(rifle1);
+        // This works because there is no enforcement of the one-to-one cardinality.
+        entityManager.persist(rifle2);
+        entityManager.flush();
+        entityManager.clear();
+
+        // Both rifles has the same soldier.
+        final Rifle r1 = entityManager.find(Rifle.class, rifle1.getId());
+        final Rifle r2 = entityManager.find(Rifle.class, rifle2.getId());
+        assertEquals(r1.getSoldier(), r2.getSoldier());
+    }
+
+    @Test
+    public void oneToOneMappedBy() {
+        // Add mappedBy="rifle" on Rifle's relation ensures that only 1 Rifle can belong to a soldier, and one Soldier belongs to a Rifle.
+        // This is NOT allowed: R1 -> S1 -> R2
+
+        // Soldier gets a Rifle:
+        Rifle rifle1 = new Rifle();
+        final Soldier soldier = new Soldier();
+        soldier.setRifle(rifle1);
+        entityManager.persist(soldier);
+        entityManager.persist(rifle1);
+        entityManager.flush();
+        entityManager.clear();
+
+        Soldier soldier1 = entityManager.find(Soldier.class, soldier.getId());
+        rifle1 = entityManager.find(Rifle.class, rifle1.getId());
+
+        assertEquals(soldier1, rifle1.getSoldier());
+
+        // Soldier gets a NEW rifle:
+        final Rifle rifleNew = new Rifle();
+        soldier1.setRifle(rifleNew);
+        entityManager.persist(rifleNew);
+        entityManager.persist(soldier1);
+        entityManager.flush();
+        entityManager.clear();
+
+        // Old rifle no longer has a Soldier (but NEW has):
+        final Rifle rOld = entityManager.find(Rifle.class, rifle1.getId());
+        final Rifle rNew = entityManager.find(Rifle.class, rifleNew.getId());
+        soldier1 = entityManager.find(Soldier.class, soldier.getId());
+        entityManager.merge(soldier1);
+        assertNull(rOld.getSoldier());
+        assertEquals(soldier1, rNew.getSoldier());
+
+        // Conclusion: one-2-one is enforced...
+
+    }
+
+    @Test
+    public void oneToOne_mapsId() {
+        // Add mapsId on Rifle's relation and remove @GeneratedValue
+        // Soldier gets a Rifle:
+        // Rifle gives up its own ID and uses Soldiers.
+        // Now the Rifle cannot exist without the Soldier, and the Soldier cannot have other Rifles
+        // The Rifle might as well have been embedded onto the Soldiers table directly.
+        // This is no longer possible: R1 -> S1 -> R2
         Rifle rifle1 = new Rifle();
         final Soldier soldier = new Soldier();
         rifle1.setSoldier(soldier);
         entityManager.persist(soldier);
         entityManager.persist(rifle1);
         entityManager.flush();
+        entityManager.clear();
 
-        final Soldier soldier1 = entityManager.find(Soldier.class, soldier.getId());
-        rifle1 = entityManager.find(Rifle.class, soldier.getId());
+        Soldier soldier1 = entityManager.find(Soldier.class, soldier.getId());
+        rifle1 = entityManager.find(Rifle.class, rifle1.getId());
+        assertEquals(soldier1.getId(), rifle1.getId());
+        assertEquals(soldier1, rifle1.getSoldier());
+
+        // Soldier gets a NEW rifle:
+        final Rifle rifleNew = new Rifle();
+        soldier1.setRifle(rifleNew);
+        // Will not work: the old rifle still exists with the same ID
+        entityManager.persist(rifleNew);
+        entityManager.persist(soldier1);
+        entityManager.flush();
+        entityManager.clear();
+
+
+        // Conclusion: one-2-one is enforced...
+
+    }
+
+    @Test
+    public void manyToMany() {
+
+        final Student student = Student.builder().name("Student-" + 1).courses(new HashSet<>()).build();
+        final Student student2 = Student.builder().name("Student-" + 2).courses(new HashSet<>()).build();
+        for (int i=1; i<10; i++) {
+            Course subject = Course.builder().subject("subject-" + i).points(1).students(new HashSet<>()).build();
+            subject.getStudents().add(student);
+            subject.getStudents().add(student2);
+            entityManager.persist(subject);
+        }
+
+        entityManager.persist(student);
+        entityManager.persist(student2);
+        entityManager.flush();
+        entityManager.clear();
+
+        final Student student1 = entityManager.find(Student.class, student.getId());
+        student1.getCourses().forEach(course -> {
+            course.getStudents().remove(student1);
+        });
+//        courseRepository.saveAll(student.getCourses());
+        entityManager.persist(student1);
+        entityManager.flush();
+        entityManager.clear();
+
+    }
+
+    @Test
+    public void testMultiValueEntities() {
+        final MultiValueEntity multiValueEntity = new MultiValueEntity();
+        multiValueEntity.setStrings(List.of("string1", "string2", "string3"));
+        final Address address = new Address();
+        address.setCity("Cph");
+        address.setStreet("Ægirs");
+        multiValueEntity.setAddress(address);
+        entityManager.persist(multiValueEntity);
+        entityManager.flush();
 
     }
 }

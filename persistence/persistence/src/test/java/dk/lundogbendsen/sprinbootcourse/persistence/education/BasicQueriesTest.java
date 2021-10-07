@@ -19,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
@@ -37,7 +40,8 @@ import static org.junit.jupiter.api.Assertions.*;
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class BasicQueriesTest {
 
-    @Autowired EntityManager em;
+    @Autowired
+    EntityManager em;
     @Autowired
     CourseRepository courseRepository;
     @Autowired
@@ -155,12 +159,14 @@ public class BasicQueriesTest {
     }
 
     @Test
-    public void deleteTeacherJohnsonV1() {
+    public void deleteTeacherJohnson_without_updating_courses() {
+        // This fails because Teacher is not owning the relation, and therefore is rejected by foreign key constraint on Courses -> Teacher
         teacherRepository.delete(johnson);
         try {
             teacherRepository.flush();
             fail();
         } catch (Exception e) {
+            System.out.println("e = " + e.getMessage());
         }
     }
 
@@ -175,12 +181,12 @@ public class BasicQueriesTest {
 
     @Test
 //    @Rollback(value = false)
-    public void deleteStudent() {
+    public void deleteStudent_update_courses() {
         final Student student = studentRepository.getOne(anna.getId());
+
+        // We must update the Course side of the relation in order to delete a student
         student.getCourses().forEach(course -> {
-            Set<Student> students = new HashSet<>(course.getStudents());
-            students.remove(student);
-            course.setStudents(students);
+            course.getStudents().remove(student);
         });
         studentRepository.delete(student);
         studentRepository.flush();
@@ -192,12 +198,15 @@ public class BasicQueriesTest {
         studentRepository.save(jim);
         final Course courseArt = courseRepository.findById(art.getId()).get();
         courseArt.getStudents().add(jim);
-        final Course courseMath = courseRepository.findById(art.getId()).get();
+        final Course courseMath = courseRepository.findById(math.getId()).get();
         courseMath.getStudents().add(jim);
         courseRepository.save(courseArt);
+        courseRepository.save(courseMath);
         courseRepository.flush();
 
-        final Student student = studentRepository.getOne(anna.getId());
+        final Student student = studentRepository.getOne(jim.getId());
+        // Tell entity manager to refresh the student because the cached version is not updated with the courses set above.
+        em.refresh(student);
         assertEquals(2, student.getCourses().size());
     }
 
@@ -239,7 +248,7 @@ public class BasicQueriesTest {
     public void findCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
         Teacher teacherSmith = teacherRepository.getOne(smith.getId());
-        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0, 1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
 
@@ -247,7 +256,7 @@ public class BasicQueriesTest {
     public void listCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
         Teacher teacherSmith = teacherRepository.getOne(smith.getId());
-        final List<Course> coursesByPointsBetween = courseRepository.listCourses(5, 12, studentAnna, teacherSmith, PageRequest.of(0,1, Sort.by("subject").ascending()));
+        final List<Course> coursesByPointsBetween = courseRepository.listCourses(5, 12, studentAnna, teacherSmith, PageRequest.of(0, 1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
 
