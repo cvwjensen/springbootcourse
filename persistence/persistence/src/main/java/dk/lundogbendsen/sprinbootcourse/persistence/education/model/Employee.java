@@ -9,6 +9,6 @@ import javax.persistence.*;
 public class Employee {
     @Id @GeneratedValue
     private Long id;
-    @ManyToOne
-    Department department;
+//    @ManyToOne
+//    Department department;
 }

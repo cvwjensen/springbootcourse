@@ -1,16 +1,20 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.education.model;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToMany
+    @ManyToMany(mappedBy = "products")
     List<Order> orders;
 }

@@ -4,6 +4,7 @@ import dk.lundogbendsen.sprinbootcourse.persistence.education.model.*;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.CourseRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import javax.persistence.EntityManager;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @DataJpaTest
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class RelationshipTests {
     @Autowired
     EntityManager entityManager;
@@ -23,18 +25,70 @@ public class RelationshipTests {
     CourseRepository courseRepository;
 
     @Test
+    public void testManyToMany() {
+        Product p1 = new Product();
+        Product p2 = new Product();
+        Order o1 = new Order();
+        Order o2 = new Order();
+
+        p1.setOrders(List.of(o1, o2));
+        p2.setOrders(List.of(o1, o2));
+//        o1.setProducts(List.of(p1, p2));
+//        o2.setProducts(List.of(p1, p2));
+
+        entityManager.persist(p1);
+        entityManager.persist(p2);
+        entityManager.persist(o1);
+        entityManager.persist(o2);
+        entityManager.flush();
+        entityManager.clear();
+
+        final Product product1 = entityManager.find(Product.class, p1.getId());
+        final Order order2 = entityManager.find(Order.class, o2.getId());
+    }
+
+    @Test
+    public void testManyToOne() {
+        final Employee employee1 = new Employee();
+        final Employee employee2 = new Employee();
+        final Department department = new Department();
+
+//        employee1.setDepartment(department);
+//        employee2.setDepartment(department);
+
+        entityManager.persist(employee1);
+        entityManager.persist(employee2);
+        entityManager.persist(department);
+        entityManager.flush();
+        entityManager.clear();
+
+        Employee emp1 = entityManager.find(Employee.class, employee1.getId());
+        Department dep1 = entityManager.find(Department.class, department.getId());
+
+
+
+
+    }
+
+
+    @Test
     public void oneToMany() {
-        final Employee employee = new Employee();
+        final Employee employee1 = new Employee();
+        final Employee employee2 = new Employee();
         final Department department1 = new Department();
-//        employee.setDepartment(department1);
+        department1.setEmployees(List.of(employee1, employee2));
 
 
-        entityManager.persist(employee);
-//        entityManager.persist(department1);
+        entityManager.persist(employee1);
+        entityManager.persist(employee2);
+        entityManager.persist(department1);
         entityManager.flush();
+        entityManager.clear();
 
-        entityManager.remove(employee);
-        entityManager.flush();
+        Employee emp1 = entityManager.find(Employee.class, employee1.getId());
+        Department dep1 = entityManager.find(Department.class, department1.getId());
+
+
     }
 
     @Test
