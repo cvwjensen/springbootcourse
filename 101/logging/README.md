@@ -247,7 +247,7 @@ It is also able to read the application.properties to extract information from t
 - ?What happened to the output?
 
 ### Exercise 8: Logback - Use Spring profiles to set loglevel
-The output from the previous exercise is json, which is very nide for a centralised logging system, but unreadable for the human eye.
+The output from the previous exercise is json, which is very nice for a centralised logging system, but unreadable for the human eye.
 
 In this exercise we will take advantage of a Springboot logback extension that allows us to use Spring profiles in the logging configuration.
 
