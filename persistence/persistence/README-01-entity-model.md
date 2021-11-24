@@ -6,7 +6,7 @@ Prerequisite for these exercises is a new Springboot project with the following 
 
 - spring-boot-starter-data-jpa
 - h2 database
-- (lombok)
+- lombok
 
 ### Exercise 1: create a Domain model for the Education case
 In this exercise you are going to create 3 domain classes representing Student, Course and Teacher.

@@ -61,8 +61,8 @@ services:
       - elasticsearch
 
   mongo:
-    image: mongo
-    restart: always
+    image: mongo:3
+#     restart: always
     ports:
       - 27017:27017
     environment:
