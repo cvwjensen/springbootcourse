@@ -309,18 +309,17 @@ If you do so, the Autoconfiguration will back off and not setup the BasicErrorCo
 
 - Make a new class, MyErrorController, and annotate it `@RestController` and `@RequestMapping("/error")`.
 - Implement the `ErrorController` interface.
-- Let the `getErrorPath()` return "/error".  
 - Make a method `public ResponseEntity<Map<String, Object>> myErrorHandler(ServletWebRequest webRequest)`.
 
 The ServletWebRequest webRequest is a handle to the new request created by the Webserver when the DispatcherServlet has given up and asks for the error page. 
-It includes a reference to the original request, where the DispatcherServlet has put a lot of attribute regarding the Exception, including the StackTrace.
+It includes a reference to the original request, where the DispatcherServlet has put a lot of attributes regarding the Exception, including the StackTrace.
 
 - Pull out the exception attributes from the request with this snippet:
 ```java
 final DefaultErrorAttributes defaultErrorAttributes = new DefaultErrorAttributes();
 final Map<String, Object> errorAttributes = defaultErrorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.of(ErrorAttributeOptions.Include.STACK_TRACE));
 ```
-- Print out the errorAttributes. This is where you could notify your operations about details of the uncaught exception.
+- Print out the errorAttributes. This is where you could notify your operations about details of the uncaught exception or maybe just enrich with a TraceId from the request for further investigation.
 - Return a Map with the message from the "error" key in the errorAttributes. This is where the BasicErrorController normally would create its WhiteLabel Error.
 
 #### Solution
@@ -328,19 +327,14 @@ final Map<String, Object> errorAttributes = defaultErrorAttributes.getErrorAttri
 @RestController
 @RequestMapping("/error")
 public class MyErrorController implements ErrorController {
-    @Override
-    public String getErrorPath() {
-        return "/error";
-    }
-
-    @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
-    @GetMapping
-    public Map<String, Object> handleError(ServletWebRequest webRequest) {
-        final DefaultErrorAttributes defaultErrorAttributes = new DefaultErrorAttributes();
-        final Map<String, Object> errorAttributes = defaultErrorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.of(ErrorAttributeOptions.Include.STACK_TRACE));
-        System.out.println("errorAttributes = " + errorAttributes);
-        return Map.of("Message", errorAttributes.get("error"));
-    }
+  @RequestMapping
+  public ResponseEntity<Map<String, Object>> handleError(ServletWebRequest webRequest) {
+    final DefaultErrorAttributes defaultErrorAttributes = new DefaultErrorAttributes();
+    final Map<String, Object> errorAttributes = defaultErrorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.of(ErrorAttributeOptions.Include.STACK_TRACE));
+    System.out.println("errorAttributes = " + errorAttributes);
+    Map<String, Object> body = Map.of("Message", errorAttributes.get("error"));
+    return new ResponseEntity<>(body, HttpStatus.valueOf((Integer) errorAttributes.get("status")));
+  }
 }
 ```
 
