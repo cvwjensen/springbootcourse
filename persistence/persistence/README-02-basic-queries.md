@@ -77,12 +77,7 @@ What happens if you getOne with a non-existing ID? You get a handle that proxies
         Long id = 100L;
         Teacher teacher = teacherRepository.getOne(id);
         assertNotNull(teacher);
-        try {
-            teacher.getTeaches();
-            fail();
-        } catch (EntityNotFoundException e) {
-
-        }
+        assertThrows(EntityNotFoundException.class, teacher::getTeaches);
     }
 ```
 
@@ -252,20 +247,23 @@ In this exercise we will add a new Student and put into a Course.
 
 #### Solution
 ```java
-    @Test
-    public void createStudent_addToCourses() {
-        final Student jim = Student.builder().name("Jim").build();
-        studentRepository.save(jim);
-        final Course courseArt = courseRepository.findById(art.getId()).get();
-        courseArt.getStudents().add(jim);
-        final Course courseMath = courseRepository.findById(art.getId()).get();
-        courseMath.getStudents().add(jim);
-        courseRepository.save(courseArt);
-        courseRepository.flush();
+@Test
+public void createStudent_addToCourses() {
+    final Student jim = Student.builder().name("Jim").build();
+    studentRepository.save(jim);
+    final Course courseArt = courseRepository.findById(art.getId()).get();
+    courseArt.getStudents().add(jim);
+    final Course courseMath = courseRepository.findById(math.getId()).get();
+    courseMath.getStudents().add(jim);
+    courseRepository.save(courseArt);
+    courseRepository.save(courseMath);
+    courseRepository.flush();
 
-        final Student student = studentRepository.getOne(anna.getId());
-        assertEquals(2, student.getCourses().size());
-    }
+    final Student student = studentRepository.getOne(jim.getId());
+    // Tell entity manager to refresh the student because the cached version is not updated with the courses set above.
+    em.refresh(student);
+    assertEquals(2, student.getCourses().size());
+}
 ```
 
 ### Exercise 13: Remove Student from Course

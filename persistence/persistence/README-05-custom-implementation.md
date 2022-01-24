@@ -17,7 +17,7 @@ By convention the Spring looks for an implementation of the interface by looking
 
 
 - Make a new Interface called `TeacherRepositoryCustom`.
-- Add a method `Set<Student> getStudentNames(String teacherName)`.
+- Add a method `List<Student> getStudents(String teacherName)`.
 ---
 - Make a new class `TeacherRepositoryCustomImpl` - named excatly like the repository with the 'Impl' postfix.
 - Implement the `TeacherRepositoryCustom` interface.
@@ -36,7 +36,7 @@ By convention the Spring looks for an implementation of the interface by looking
 _Make the new interface:_
 ```java
 public interface TeacherRepositoryCustom {
-    Set<Student> getStudents(String teacherName);
+    List<Student> getStudents(String teacherName);
 }
 ```
 
@@ -70,7 +70,7 @@ _Use the new methods._
 ```java
 @Test
 public void testCustomImplementation() {
-    final Set<Student> johnson = teacherRepository.getStudents("Johnson");
+    final List<Student> johnson = teacherRepository.getStudents("Johnson");
     assertEquals(3, johnson.size());
 }
 ```

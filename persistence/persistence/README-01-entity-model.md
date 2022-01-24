@@ -150,20 +150,20 @@ Hibernate: drop table if exists course CASCADE
 Hibernate: drop table if exists course_students CASCADE 
 Hibernate: drop table if exists student CASCADE 
 Hibernate: drop table if exists teacher CASCADE 
-Hibernate: drop table if exists teacher_teaches CASCADE 
+Hibernate: drop table if exists course_teaches CASCADE 
 Hibernate: drop sequence if exists hibernate_sequence
 Hibernate: create sequence hibernate_sequence start with 1 increment by 1
 Hibernate: create table course (id bigint not null, points integer, subject varchar(255), teacher_id bigint, primary key (id))
 Hibernate: create table course_students (courses_id bigint not null, students_id bigint not null)
 Hibernate: create table student (id bigint not null, name varchar(255), primary key (id))
 Hibernate: create table teacher (id bigint not null, name varchar(255), primary key (id))
-Hibernate: create table teacher_teaches (teacher_id bigint not null, teaches_id bigint not null)
-Hibernate: alter table teacher_teaches add constraint UK_bwumw525p0iaav79x9lixhity unique (teaches_id)
+Hibernate: create table course_teaches (teacher_id bigint not null, teaches_id bigint not null)
+Hibernate: alter table course_teaches add constraint UK_bwumw525p0iaav79x9lixhity unique (teaches_id)
 Hibernate: alter table course add constraint FKsybhlxoejr4j3teomm5u2bx1n foreign key (teacher_id) references teacher
 Hibernate: alter table course_students add constraint FK532dg5ikp3dvbrbiiqefdoe6m foreign key (students_id) references student
 Hibernate: alter table course_students add constraint FKh6irfl8rj4jgb3xrlyxsr2bdk foreign key (courses_id) references course
-Hibernate: alter table teacher_teaches add constraint FK5w66phdtydqm3hg7lki9md8il foreign key (teaches_id) references course
-Hibernate: alter table teacher_teaches add constraint FKa3ccrnysoopdf4jtulh9ga2rn foreign key (teacher_id) references teacher
+Hibernate: alter table course_teaches add constraint FK5w66phdtydqm3hg7lki9md8il foreign key (teaches_id) references course
+Hibernate: alter table course_teaches add constraint FKa3ccrnysoopdf4jtulh9ga2rn foreign key (teacher_id) references teacher
 ```
 
 

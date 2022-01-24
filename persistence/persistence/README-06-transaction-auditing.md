@@ -6,8 +6,8 @@ The reason we have not been bothered by this so far, is because all Spring sets 
 
 To test how transactions works, we must disable automatic transactions and take control our selves. We can do this by adding the @Transactional annotation on our test case. And then we can tweak that annotation to allow testing it.
 
-### Exercise 1: CrudRepository methods are automatically marked transactional
-In this exercise we are going to realize that repository methods originating from the CrudRepository are marked with transactional.
+### Exercise 1: CrudRepository methods are automatically marked @Transactional
+In this exercise we are going to realize that repository methods originating from the CrudRepository are marked with @Transactional.
 
 - Make a test case for deleting a student.
 - Create a new student and use studentRepository to save it.
@@ -46,11 +46,12 @@ This STILL works. That is because the delete() operation comes from CrudReposito
     public void deleteStudentsByName() {
         final Student christian = Student.builder().name("Christian").build();
         studentRepository.save(christian);
+        
         studentRepository.delete(christian);
     }
 ```
 
-### Exercise 3: Create a deleteByName method on the StudentRepository
+### Exercise 3: Create a deleteAllByName method on the StudentRepository
 In this exercise we will create a new way of deleting a Student by name, and see how that works with transactions.
 
 - Make a method `void deleteAllByName(String name);` on the StudentRepository.
@@ -58,7 +59,7 @@ In this exercise we will create a new way of deleting a Student by name, and see
 - Run the test case. Will it work?
 
 NO! It fails because there is no transaction associated with the call to the repository, and we did not mark it ourselves. 
-There MUST be for updating operations.
+There MUST be a transaction for updating operations.
 
 #### Solution
 ```java
