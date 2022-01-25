@@ -222,6 +222,8 @@ As always Springboot lets you take complete control by adding up some ExceptionH
 
 The latter approach is recommended.
 
+Use the project *springbootcourse/api/person-service-api* as a starting point for the following exercises.
+
 
 ### Exercise 1: ExceptionHandlers in Controllers
 The PersonService throws a PersonCreateException in the create method if the Person object already contains an id. 
