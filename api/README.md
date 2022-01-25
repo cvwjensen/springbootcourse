@@ -344,6 +344,8 @@ public class MyErrorController implements ErrorController {
 
 ## Exercises section 3: Filters and Intercepters
 
+Use the project *springbootcourse/api/person-service-api* as a starting point for the following exercises.
+
 ### Exercise 1: Security Filter
 Let's make the Person API a bit more secure by adding a Filter that checks if you are authenticated. 
 Only requests with a header containing an apiToken can pass.
