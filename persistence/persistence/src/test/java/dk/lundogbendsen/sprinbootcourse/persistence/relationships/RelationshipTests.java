@@ -25,6 +25,47 @@ public class RelationshipTests {
     CourseRepository courseRepository;
 
     @Test
+    public void testWhyListCollectionsAreSlow() {
+        // Why should we use Set instead of List?
+        // Because List collections preserve order of association
+        // resulting in deletion of rows of association in case of changes to list...
+
+        // Demo setup: create an order with 3 products:
+        final Product product1 = Product.builder().build();
+        final Product product2 = Product.builder().build();
+        final Product product3 = Product.builder().build();
+        final Order order1 = Order.builder().products(List.of(product1, product2, product3)).build();
+
+        entityManager.persist(product1);
+        entityManager.persist(product2);
+        entityManager.persist(product3);
+        entityManager.persist(order1);
+        entityManager.flush();
+        entityManager.clear();
+
+        // Fetch the order
+        Order order = entityManager.find(Order.class, order1.getId());
+
+        // Remove a product
+        order.getProducts().remove(2);
+        entityManager.persist(order);
+        entityManager.flush();
+        entityManager.clear();
+        // Notice the SQL in the log when flush() is called
+
+        order = entityManager.find(Order.class, order1.getId());
+
+        order.getProducts().add(product3);
+        entityManager.persist(order);
+        entityManager.flush();
+        entityManager.clear();
+
+        order = entityManager.find(Order.class, order1.getId());
+
+    }
+
+
+    @Test
     public void testManyToMany() {
         Product p1 = new Product();
         Product p2 = new Product();

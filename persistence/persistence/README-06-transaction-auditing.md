@@ -6,8 +6,8 @@ The reason we have not been bothered by this so far, is because all Spring sets 
 
 To test how transactions works, we must disable automatic transactions and take control our selves. We can do this by adding the @Transactional annotation on our test case. And then we can tweak that annotation to allow testing it.
 
-### Exercise 1: CrudRepository methods are automatically marked @Transactional
-In this exercise we are going to realize that repository methods originating from the CrudRepository are marked with @Transactional.
+### Exercise 1: Repository methods are automatically transactional (see SimpleJpaRepository.class)
+In this exercise we are going to realize that repository methods originating from the CrudRepository are marked with transactional.
 
 - Make a test case for deleting a student.
 - Create a new student and use studentRepository to save it.
@@ -46,25 +46,26 @@ This STILL works. That is because the delete() operation comes from CrudReposito
     public void deleteStudentsByName() {
         final Student christian = Student.builder().name("Christian").build();
         studentRepository.save(christian);
-        
         studentRepository.delete(christian);
     }
 ```
 
-### Exercise 3: Create a deleteAllByName method on the StudentRepository
+### Exercise 3: Create a deleteByName method on the StudentRepository
 In this exercise we will create a new way of deleting a Student by name, and see how that works with transactions.
 
-- Make a method `void deleteAllByName(String name);` on the StudentRepository.
+- Make a method `void deleteByName(String name);` on the StudentRepository.
 - Update the testcase from before to delete the student using the new method.
 - Run the test case. Will it work?
 
-NO! It fails because there is no transaction associated with the call to the repository, and we did not mark it ourselves. 
-There MUST be a transaction for updating operations.
+NO! It fails because there is no transaction associated with the call to the repository, and we did not mark it ourselves ("No EntityManager with actual transaction available for current thread"). 
+There MUST be a transaction.
+
+The methods YOU provide on a Repository does not automatically have a transaction associated.
 
 #### Solution
 ```java
 public interface StudentRepository extends JpaRepository<Student, Long> {
-    void deleteAllByName(String name);
+    void deleteByName(String name);
 }
 ```
 ---
@@ -75,11 +76,11 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
         final Student christian = Student.builder().name("Christian").build();
         studentRepository.save(christian);
 //        studentRepository.delete(christian);
-        studentRepository.deleteAllByName("Christian");
+        studentRepository.deleteByName("Christian");
     }
 ```
 
-### Exercise 4: Include deleteStudentByName in a Transaction
+### Exercise 4: Include deleteByName in a Transaction
 In this exercise we are going to execute the deleteByName in a transaction. There are two approaces to this.
 
 Either we are marking the repository method explicitly with the @Transactional annotation, OR we are propagating the transaction from the testmethod.
@@ -93,7 +94,7 @@ YES! Because it runs in an explicit transaction of its own.
 ```java
 public interface StudentRepository extends JpaRepository<Student, Long> {
     @Transactional
-    void deleteAllByName(String name);
+    void deleteByName(String name);
 }
 ```
 

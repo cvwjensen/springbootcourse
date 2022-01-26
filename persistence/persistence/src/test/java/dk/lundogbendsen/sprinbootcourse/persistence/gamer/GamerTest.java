@@ -6,15 +6,29 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
+import javax.persistence.EntityManager;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 //@DataMongoTest
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class GamerTest {
+    @Autowired
+    EntityManager entityManager;
 
     @Autowired
     GamerRepository gamerRepository;
+
+
+    @Test
+    public void persistGamer() {
+        Gamer gamer = new Gamer();
+        gamer.setAlias("The Master");
+        gamer.setAvatar("ABC");
+        entityManager.persist(gamer);
+        entityManager.flush();
+    }
 
     @Test
 //    @Rollback(value = false)

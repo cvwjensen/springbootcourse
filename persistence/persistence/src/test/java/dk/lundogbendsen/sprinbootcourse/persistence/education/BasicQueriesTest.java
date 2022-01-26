@@ -281,7 +281,7 @@ public class BasicQueriesTest {
         final Student christian = Student.builder().name("Christian").build();
         studentRepository.save(christian);
 //        studentRepository.delete(christian);
-        studentRepository.deleteAllByName("Christian");
+        studentRepository.deleteByName("Christian");
     }
 
     @Test
