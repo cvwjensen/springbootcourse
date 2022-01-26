@@ -49,7 +49,7 @@ A Pagable can be built with like this:
 ### Exercise 3: Basis Queries - get by ID
 You can get an Entity directly if you know the ID.
 
-- Make a test for fetching Teacher Johnson. Use the getOne().
+- Make a test for fetching Teacher Johnson. Use the findById().
 - Assert that the fetched teachers name is Johnson.
 
 #### Solution
@@ -57,12 +57,14 @@ You can get an Entity directly if you know the ID.
     @Test
     public void getOneTest() {
         Long id = johnson.getId();
-        final Teacher teacher = teacherRepository.getOne(id);
+        final Teacher teacher = teacherRepository.findById(id).get();
         assertEquals("Johnson", teacher.getName());
     }
 ```
 
 ### Exercise 4: Basis Queries - get by non-existing ID
+@Deprecated as we no longer use getOne()...
+
 What happens if you getOne with a non-existing ID? You get a handle that proxies a null value.
 
 - Make a test for fetching Teacher Johnson. Use the getOne(100L).
@@ -128,7 +130,7 @@ In this exercise we will see how navigation works. We load a Student, find a Cou
 ```java
     @Test
     public void navigateFromStudentToTeacher() {
-        final Student student = studentRepository.getOne(tom.getId());
+        final Student student = studentRepository.findById(tom.getId()).get();
         final Course course = student.getCourses().stream().filter(c -> c.getSubject().equals("art")).findFirst().get();
         final Teacher teacher = course.getTeacher();
         assertEquals("Johnson", teacher.getName());
@@ -203,7 +205,7 @@ We'll try to delete a Teacher in this exercise. But this time we will remove ass
 ```java
     @Test
     public void deleteTeacherJohnson() {
-        Teacher teacherJohnson = teacherRepository.getOne(johnson.getId());
+        Teacher teacherJohnson = teacherRepository.findById(johnson.getId()).get();
         teacherJohnson.getTeaches().forEach(course -> course.setTeacher(null));
         teacherRepository.delete(teacherJohnson);
         teacherRepository.flush();
@@ -221,7 +223,7 @@ Students are in a ManyToMany relationship with Courses. We'll try delete one.
 #### Solution
 ```java
     public void deleteStudent_update_courses() {
-        final Student student = studentRepository.getOne(anna.getId());
+        final Student student = studentRepository.findById(anna.getId()).get();
 
         // We must update the Course side of the relation in order to delete a student
         student.getCourses().forEach(course -> {    
@@ -257,7 +259,7 @@ public void createStudent_addToCourses() {
     courseRepository.save(courseMath);
     courseRepository.flush();
 
-    final Student student = studentRepository.getOne(jim.getId());
+    final Student student = studentRepository.findById(jim.getId()).get();
     // Tell entity manager to refresh the student because the cached version is not updated with the courses set above.
     em.refresh(student);
     assertEquals(2, student.getCourses().size());
