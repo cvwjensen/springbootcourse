@@ -186,11 +186,7 @@ This will fail because of referential integrity (the relation to a Course is not
     @Test
     public void deleteTeacherJohnsonV1() {
         teacherRepository.delete(johnson);
-        try {
-            teacherRepository.flush();
-            fail();
-        } catch (Exception e) {
-        }
+        assertThrows(Exception.class, () -> teacherRepository.flush());
     }
 ```
 

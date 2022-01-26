@@ -6,6 +6,7 @@ import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Teacher;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.CourseRepository;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.StudentRepository;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.TeacherRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,12 +166,7 @@ public class BasicQueriesTest {
     public void deleteTeacherJohnson_without_updating_courses() {
         // This fails because Teacher is not owning the relation, and therefore is rejected by foreign key constraint on Courses -> Teacher
         teacherRepository.delete(johnson);
-        try {
-            teacherRepository.flush();
-            fail();
-        } catch (Exception e) {
-            System.out.println("e = " + e.getMessage());
-        }
+        assertThrows(Exception.class, () -> teacherRepository.flush());
     }
 
     @Test
