@@ -220,14 +220,16 @@ Students are in a ManyToMany relationship with Courses. We'll try delete one.
 
 #### Solution
 ```java
+    public void deleteStudent_update_courses() {
         final Student student = studentRepository.getOne(anna.getId());
-        student.getCourses().forEach(course -> {
-            Set<Student> students = new HashSet<>(course.getStudents());
-            students.remove(student);
-            course.setStudents(students);
+
+        // We must update the Course side of the relation in order to delete a student
+        student.getCourses().forEach(course -> {    
+            course.getStudents().remove(student);
         });
         studentRepository.delete(student);
         studentRepository.flush();
+    }
 ```
 
 ### Exercise 12: Add Student and assign to Course
