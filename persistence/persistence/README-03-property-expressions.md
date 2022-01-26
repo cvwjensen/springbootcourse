@@ -84,7 +84,7 @@ In the exercise we will make a method on the courseRepository that work on sever
 
 - Make a new method on courseRepository that is named after Points between, a Student and a Teacher. 
 - Also add a Pagable to the method signatures argument list.
-- Make a test for finding all courses with points between 5 and 12 that is attended by Anna, and tought by Smith. The result should be paginated with page size 1 and sorted ascending by subject.
+- Make a test for finding all courses with points between 5 and 12 that is attended by Anna, and taught by Smith. The result should be paginated with page size 1 and sorted ascending by subject.
 
 **Tip:** 
 
