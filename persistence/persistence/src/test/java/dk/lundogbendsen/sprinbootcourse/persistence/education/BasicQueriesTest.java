@@ -82,7 +82,10 @@ public class BasicQueriesTest {
     public void findAllCourses() {
         final List<Course> all = courseRepository.findAll();
         assertEquals(3, all.size());
-        assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(all.get(0).getSubject(), all.get(1).getSubject(), all.get(2).getSubject()));
+//        assertThat(List.of("art", "philosophy", "math"), containsInAnyOrder(all.get(0).getSubject(), all.get(1).getSubject(), all.get(2).getSubject()));
+        List<String> expectedSubjectList = List.of("art", "philosophy", "math");
+        List<String> actualSubjectList = all.stream().map(Course::getSubject).toList();
+        assertTrue(expectedSubjectList.containsAll(actualSubjectList) && actualSubjectList.containsAll(expectedSubjectList));
     }
 
     @Test
