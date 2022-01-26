@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -17,5 +18,5 @@ public class Order {
     @GeneratedValue
     private Long id;
     @ManyToMany
-    List<Product> products;
+    Set<Product> products;
 }

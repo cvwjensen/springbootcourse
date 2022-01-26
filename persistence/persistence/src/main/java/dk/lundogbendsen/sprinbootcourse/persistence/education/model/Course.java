@@ -26,5 +26,5 @@ public class Course extends AuditedEntity{
     @ManyToOne
     private Teacher teacher;
     @ManyToMany
-    private Set<Student> students = new HashSet<>();
+    private Set<Student> students;
 }

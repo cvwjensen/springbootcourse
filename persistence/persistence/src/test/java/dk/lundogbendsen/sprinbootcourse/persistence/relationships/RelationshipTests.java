@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import javax.persistence.EntityManager;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -34,7 +35,7 @@ public class RelationshipTests {
         final Product product1 = Product.builder().build();
         final Product product2 = Product.builder().build();
         final Product product3 = Product.builder().build();
-        final Order order1 = Order.builder().products(List.of(product1, product2, product3)).build();
+        final Order order1 = Order.builder().products(Set.of(product1, product2, product3)).build();
 
         entityManager.persist(product1);
         entityManager.persist(product2);
@@ -44,10 +45,11 @@ public class RelationshipTests {
         entityManager.clear();
 
         // Fetch the order
+        Product productToRemove = entityManager.find(Product.class, product3.getId());
         Order order = entityManager.find(Order.class, order1.getId());
 
         // Remove a product
-        order.getProducts().remove(2);
+        order.getProducts().remove(productToRemove);
         entityManager.persist(order);
         entityManager.flush();
         entityManager.clear();
@@ -72,8 +74,8 @@ public class RelationshipTests {
         Order o1 = new Order();
         Order o2 = new Order();
 
-        p1.setOrders(List.of(o1, o2));
-        p2.setOrders(List.of(o1, o2));
+//        p1.setOrders(List.of(o1, o2));
+//        p2.setOrders(List.of(o1, o2));
 //        o1.setProducts(List.of(p1, p2));
 //        o2.setProducts(List.of(p1, p2));
 
@@ -94,6 +96,7 @@ public class RelationshipTests {
         final Employee employee2 = new Employee();
         final Department department = new Department();
 
+        department.setEmployees(List.of(employee1, employee2));
 //        employee1.setDepartment(department);
 //        employee2.setDepartment(department);
 
@@ -117,7 +120,7 @@ public class RelationshipTests {
         final Employee employee1 = new Employee();
         final Employee employee2 = new Employee();
         final Department department1 = new Department();
-        department1.setEmployees(List.of(employee1, employee2));
+//        department1.setEmployees(List.of(employee1, employee2));
 
 
         entityManager.persist(employee1);
