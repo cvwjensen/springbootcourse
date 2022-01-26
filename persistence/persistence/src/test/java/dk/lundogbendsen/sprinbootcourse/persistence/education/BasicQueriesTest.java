@@ -103,22 +103,9 @@ public class BasicQueriesTest {
     @Test
     public void getOneTest() {
         Long id = johnson.getId();
-        final Teacher teacher = teacherRepository.getOne(id);
+        final Teacher teacher = teacherRepository.findById(id).get();
         assertEquals("Johnson", teacher.getName());
         assertEquals(1, teacher.getTeaches().size());
-    }
-
-    @Test
-    public void getOne_NonExistingId_Test() {
-        Long id = 100L;
-        Teacher teacher = teacherRepository.getOne(id);
-        assertNotNull(teacher);
-        try {
-            teacher.getTeaches();
-            fail();
-        } catch (EntityNotFoundException e) {
-
-        }
     }
 
     @Test
@@ -130,7 +117,7 @@ public class BasicQueriesTest {
 
     @Test
     public void navigateFromStudentToTeacher() {
-        final Student student = studentRepository.getOne(tom.getId());
+        final Student student = studentRepository.findById(tom.getId()).get();
         final Course course = student.getCourses().stream().filter(c -> c.getSubject().equals("art")).findFirst().get();
         final Teacher teacher = course.getTeacher();
         assertEquals("Johnson", teacher.getName());
@@ -151,7 +138,7 @@ public class BasicQueriesTest {
 
     @Test
     public void getStudentJoshsCourses() {
-        final Student student = studentRepository.getOne(josh.getId());
+        final Student student = studentRepository.findById(josh.getId()).get();
         assertEquals(2, student.getCourses().size());
     }
 
@@ -172,7 +159,7 @@ public class BasicQueriesTest {
     @Test
 //    @Rollback(value = false)
     public void deleteTeacherJohnson() {
-        Teacher teacherJohnson = teacherRepository.getOne(johnson.getId());
+        Teacher teacherJohnson = teacherRepository.findById(johnson.getId()).get();
         teacherJohnson.getTeaches().forEach(course -> course.setTeacher(null));
         teacherRepository.delete(teacherJohnson);
         teacherRepository.flush();
@@ -181,7 +168,7 @@ public class BasicQueriesTest {
     @Test
 //    @Rollback(value = false)
     public void deleteStudent_update_courses() {
-        final Student student = studentRepository.getOne(anna.getId());
+        final Student student = studentRepository.findById(anna.getId()).get();
 
         // We must update the Course side of the relation in order to delete a student
         student.getCourses().forEach(course -> {
@@ -203,7 +190,7 @@ public class BasicQueriesTest {
         courseRepository.save(courseMath);
         courseRepository.flush();
 
-        final Student student = studentRepository.getOne(jim.getId());
+        final Student student = studentRepository.findById(jim.getId()).get();
         // Tell entity manager to refresh the student because the cached version is not updated with the courses set above.
         em.refresh(student);
         assertEquals(2, student.getCourses().size());
@@ -246,7 +233,7 @@ public class BasicQueriesTest {
     @Test
     public void findCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
-        Teacher teacherSmith = teacherRepository.getOne(smith.getId());
+        Teacher teacherSmith = teacherRepository.findById(smith.getId()).get();
         final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0, 1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
@@ -254,7 +241,7 @@ public class BasicQueriesTest {
     @Test
     public void listCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
-        Teacher teacherSmith = teacherRepository.getOne(smith.getId());
+        Teacher teacherSmith = teacherRepository.findById(smith.getId()).get();
         final List<Course> coursesByPointsBetween = courseRepository.listCourses(5, 12, studentAnna, teacherSmith, PageRequest.of(0, 1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
@@ -275,7 +262,7 @@ public class BasicQueriesTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+//    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void deleteStudentsByName() {
         final Student christian = Student.builder().name("Christian").build();
         studentRepository.save(christian);
