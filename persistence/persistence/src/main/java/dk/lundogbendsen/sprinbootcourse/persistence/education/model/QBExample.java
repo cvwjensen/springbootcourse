@@ -1,9 +1,6 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.education.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -13,9 +10,6 @@ import java.util.List;
 
 @Entity
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class QBExample {
     @Id
     @GeneratedValue

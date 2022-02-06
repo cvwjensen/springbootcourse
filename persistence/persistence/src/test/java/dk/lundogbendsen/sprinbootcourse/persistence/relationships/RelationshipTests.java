@@ -32,10 +32,11 @@ public class RelationshipTests {
         // resulting in deletion of rows of association in case of changes to list...
 
         // Demo setup: create an order with 3 products:
-        final Product product1 = Product.builder().build();
-        final Product product2 = Product.builder().build();
-        final Product product3 = Product.builder().build();
-        final Order order1 = Order.builder().products(Set.of(product1, product2, product3)).build();
+        final Product product1 = new Product();
+        final Product product2 = new Product();
+        final Product product3 = new Product();
+        final Order order1 = new Order();
+        order1.setProducts(Set.of(product1, product2, product3));
 
         entityManager.persist(product1);
         entityManager.persist(product2);
