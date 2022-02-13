@@ -16,6 +16,6 @@ public class MyService {
     }
 
     public Person get(Long id) {
-        return personRepository.getOne(id);
+        return personRepository.findById(id).get();
     }
 }

@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +34,7 @@ public class MyServiceMockitoExtension {
         Person person = new Person();
         person.setName("Christian");
         person.setId(1L);
-        when(personRepository.getOne(1L)).thenReturn(person);
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
     }
 
     @Test

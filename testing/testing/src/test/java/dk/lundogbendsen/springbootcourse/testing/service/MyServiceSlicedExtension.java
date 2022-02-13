@@ -11,6 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +34,7 @@ public class MyServiceSlicedExtension {
         Person person = new Person();
         person.setName("Christian");
         person.setId(1L);
-        when(personRepository.getOne(1L)).thenReturn(person);
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
     }
 
     @Test
