@@ -1,6 +1,6 @@
 package dk.lundogbendsen.springbootcourse.testing.examples;
 
-public class VerifyClass {
+public class MyImportantService {
     public Integer getUniqueId() {
         return null;
     }

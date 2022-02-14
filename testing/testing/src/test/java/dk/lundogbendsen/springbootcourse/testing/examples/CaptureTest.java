@@ -15,10 +15,10 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class CaptureTest {
     @Mock
-    List mockedList;
+    List<String> mockedList;
 
     @Captor
-    ArgumentCaptor argCaptor;
+    ArgumentCaptor<String> argCaptor;
 
     @Test
     public void whenUseCaptorAnnotation_thenTheSam() {

@@ -5,11 +5,12 @@ import org.mockito.Mockito;
 
 import static org.mockito.Mockito.*;
 
+// Demonstrates how to verify the interactions with the mocks on a test target.
 public class VerifyTest {
     @Test
     public void testVerify()  {
         // create and configure mock
-        VerifyClass test = Mockito.mock(VerifyClass.class);
+        MyImportantService test = Mockito.mock(MyImportantService.class);
         when(test.getUniqueId()).thenReturn(43);
 
 

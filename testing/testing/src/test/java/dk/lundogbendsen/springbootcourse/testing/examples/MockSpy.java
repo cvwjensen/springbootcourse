@@ -22,7 +22,7 @@ public class MockSpy {
     private List<String> mockList;
 
     @Spy
-    private List<String> spyList = new ArrayList();
+    private ArrayList<String> spyList;
 
     @Test
     public void testMockList() {
