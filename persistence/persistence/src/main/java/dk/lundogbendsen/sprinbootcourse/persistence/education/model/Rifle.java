@@ -14,6 +14,7 @@ public class Rifle {
     private Long id;
 
 //    @MapsId
-    @OneToOne(mappedBy = "rifle")
+    @OneToOne //(mappedBy = "rifle")
+//        @JoinColumn(unique = true) // Enforce one-to-one
     Soldier soldier;
 }
