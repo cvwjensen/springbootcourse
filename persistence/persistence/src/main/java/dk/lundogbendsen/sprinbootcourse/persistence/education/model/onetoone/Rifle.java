@@ -1,4 +1,4 @@
-package dk.lundogbendsen.sprinbootcourse.persistence.education.model;
+package dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetoone;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +16,5 @@ public class Rifle {
 //    @MapsId
     @OneToOne //(mappedBy = "rifle")
 //        @JoinColumn(unique = true) // Enforce one-to-one
-    Soldier soldier;
+        Soldier soldier;
 }

@@ -1,10 +1,15 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.relationships;
 
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.*;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.manytomany.Order;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.manytomany.Product;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetomany.Department;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetomany.Employee;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetoone.Rifle;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetoone.Soldier;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.CourseRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import javax.persistence.EntityManager;
@@ -121,7 +126,7 @@ public class RelationshipTests {
         final Employee employee1 = new Employee();
         final Employee employee2 = new Employee();
         final Department department1 = new Department();
-//        department1.setEmployees(List.of(employee1, employee2));
+        department1.setEmployees(List.of(employee1, employee2));
 
 
         entityManager.persist(employee1);
@@ -130,9 +135,9 @@ public class RelationshipTests {
         entityManager.flush();
         entityManager.clear();
 
-        Employee emp1 = entityManager.find(Employee.class, employee1.getId());
+//        Employee emp1 = entityManager.find(Employee.class, employee1.getId());
         Department dep1 = entityManager.find(Department.class, department1.getId());
-
+        dep1.getEmployees().get(1);
 
     }
 

@@ -1,7 +1,8 @@
-package dk.lundogbendsen.sprinbootcourse.persistence.education.model;
+package dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetomany;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,8 +14,10 @@ import java.util.List;
 @Getter
 @Setter
 public class Department {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
     @OneToMany
+    @BatchSize(size = 1)
     List<Employee> employees;
 }

@@ -1,4 +1,4 @@
-package dk.lundogbendsen.sprinbootcourse.persistence.education.model;
+package dk.lundogbendsen.sprinbootcourse.persistence.education.model.manytomany;
 
 import lombok.Getter;
 import lombok.Setter;
