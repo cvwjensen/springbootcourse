@@ -176,7 +176,7 @@ execute `mvn install`
 ```
 
 
-### Exercise 7: Try out the starter in a new SpringBoot project
+### Exercise 8: Try out the starter in a new SpringBoot project
 Now you are done creating the starter - it is time to test it in a real project.
 
 - Create a Naked SpringBoot project.
