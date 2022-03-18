@@ -1,6 +1,7 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.gamer;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.Repository;
 
-public interface GamerRepository extends JpaRepository<Gamer, Long> {
+public interface GamerRepository extends MongoRepository<Gamer, String> {
 }

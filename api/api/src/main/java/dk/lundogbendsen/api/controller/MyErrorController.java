@@ -1,5 +1,8 @@
 package dk.lundogbendsen.api.controller;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -14,10 +17,12 @@ import java.util.Map;
 
 //@RestController
 //@RequestMapping("/error")
+@Slf4j
 public class MyErrorController implements ErrorController {
 
     @RequestMapping
     public ResponseEntity<Map<String, Object>> handleError(ServletWebRequest webRequest) {
+//        log.debug("enter");
         final DefaultErrorAttributes defaultErrorAttributes = new DefaultErrorAttributes();
         final Map<String, Object> errorAttributes = defaultErrorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.of(ErrorAttributeOptions.Include.STACK_TRACE));
         System.out.println("errorAttributes = " + errorAttributes);

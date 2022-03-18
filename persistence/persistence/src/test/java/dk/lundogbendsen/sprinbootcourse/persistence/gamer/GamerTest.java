@@ -2,20 +2,23 @@ package dk.lundogbendsen.sprinbootcourse.persistence.gamer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
 import javax.persistence.EntityManager;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DataJpaTest
-//@DataMongoTest
-//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@DataJpaTest
+@DataMongoTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class GamerTest {
-    @Autowired
-    EntityManager entityManager;
+//    @Autowired
+//    EntityManager entityManager;
 
     @Autowired
     GamerRepository gamerRepository;
@@ -26,8 +29,10 @@ public class GamerTest {
         Gamer gamer = new Gamer();
         gamer.setAlias("The Master");
         gamer.setAvatar("ABC");
-        entityManager.persist(gamer);
-        entityManager.flush();
+        gamerRepository.save(gamer);
+        Optional<Gamer> savedGamer = gamerRepository.findById(gamer.getId());
+//        entityManager.persist(gamer);
+//        entityManager.flush();
     }
 
     @Test

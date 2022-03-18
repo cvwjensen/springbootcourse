@@ -2,16 +2,20 @@ package dk.lundogbendsen.springbootcourse.testing.api;
 
 import dk.lundogbendsen.springbootcourse.testing.model.Person;
 import dk.lundogbendsen.springbootcourse.testing.repository.PersonRepository;
+import dk.lundogbendsen.springbootcourse.testing.service.MyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.Is.is;
@@ -38,7 +42,7 @@ public class Strategy3_FullSpringBoot_FakeHttp {
         Person person = new Person();
         person.setName("Christian");
         person.setId(1L);
-        given(personRepository.getOne(1L)).willReturn(person);
+        given(personRepository.findById(1L)).willReturn(Optional.of(person));
     }
 
     @Test

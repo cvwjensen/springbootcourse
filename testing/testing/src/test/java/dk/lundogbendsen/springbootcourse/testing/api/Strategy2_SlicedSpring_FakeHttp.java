@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
@@ -38,7 +40,7 @@ public class Strategy2_SlicedSpring_FakeHttp {
         Person person = new Person();
         person.setName("Christian");
         person.setId(1L);
-        given(personRepository.getOne(1L)).willReturn(person);
+        given(personRepository.findById(1L)).willReturn(Optional.of(person));
     }
 
     @Test

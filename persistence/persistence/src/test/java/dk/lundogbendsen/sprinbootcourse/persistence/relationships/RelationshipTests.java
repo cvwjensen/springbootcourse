@@ -103,8 +103,8 @@ public class RelationshipTests {
         final Department department = new Department();
 
         department.setEmployees(List.of(employee1, employee2));
-//        employee1.setDepartment(department);
-//        employee2.setDepartment(department);
+        employee1.setDepartment(department);
+        employee2.setDepartment(department);
 
         entityManager.persist(employee1);
         entityManager.persist(employee2);

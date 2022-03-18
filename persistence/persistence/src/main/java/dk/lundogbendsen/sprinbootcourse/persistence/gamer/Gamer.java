@@ -7,13 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Entity
+//@Entity
 @Getter
 @Setter
 public class Gamer {
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
     private String alias;
     private String avatar;
 }

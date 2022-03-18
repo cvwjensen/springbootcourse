@@ -1,6 +1,7 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetomany;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -9,6 +10,6 @@ import javax.persistence.*;
 public class Employee {
     @Id @GeneratedValue
     private Long id;
-//    @ManyToOne
-//    Department department;
+    @ManyToOne
+    Department department;
 }

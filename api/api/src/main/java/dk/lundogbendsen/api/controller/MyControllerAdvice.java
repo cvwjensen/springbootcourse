@@ -1,6 +1,7 @@
 package dk.lundogbendsen.api.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,8 +16,8 @@ public class MyControllerAdvice {
     }
 
     @ExceptionHandler
-    public String exceptionStrategy2(ExceptionStrategy2Exception e) {
-        return "ExceptionStrategy2: " + e.getMessage();
+    public ResponseEntity<String> exceptionStrategy2(ExceptionStrategy2Exception e) {
+        return ResponseEntity.badRequest().body("Exception");
     }
 
 //    @ExceptionHandler
