@@ -234,7 +234,7 @@ public class BasicQueriesTest {
     public void findCoursesWithPointsBetween_AndStudent_AndTeacher_AndPagination() {
         Student studentAnna = studentRepository.findById(anna.getId()).get();
         Teacher teacherSmith = teacherRepository.findById(smith.getId()).get();
-        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, anna, teacherSmith, PageRequest.of(0, 1, Sort.by("subject").ascending()));
+        final List<Course> coursesByPointsBetween = courseRepository.findCoursesByPointsBetweenAndStudentsAndTeacher(5, 12, studentAnna, teacherSmith, PageRequest.of(0, 1, Sort.by("subject").ascending()));
         assertEquals(1, coursesByPointsBetween.size());
     }
 
