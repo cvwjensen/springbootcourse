@@ -83,11 +83,6 @@ Content of the `pom.xml`:
       <artifactId>person-service</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>com.example</groupId>
-      <artifactId>person-service-starter</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 </project>
 ```
