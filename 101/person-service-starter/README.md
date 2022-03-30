@@ -47,9 +47,9 @@ In this dependency we get Spring core modules along with all the @ConditionalNNN
 
 The person-service maven coordinates are:
 ```
-    <groupId>com.example</groupId>
-    <artifactId>person-service-starter</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <groupId>org.example</groupId>
+    <artifactId>person-service</artifactId>
+    <version>1.0-SNAPSHOT</version>
 ```
 
 #### Solution
