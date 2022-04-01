@@ -49,7 +49,7 @@ public class TeacherRepositoryCustomImpl implements TeacherRepositoryCustom {
     EntityManager entityManager;
 
     @Override
-    public Set<Student> getStudents(String teacherName) {
+    public List<Student> getStudents(String teacherName) {
         final Query query = entityManager.createQuery("select s from Course c inner join c.students s where c.teacher.name=:name", Student.class);
         query.setParameter("name", teacherName);
         return query.getResultList();

@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -17,5 +17,5 @@ public class Product {
     @GeneratedValue
     private Long id;
     @ManyToMany(mappedBy = "products")
-    List<Order> orders;
+    Set<Order> orders;
 }
