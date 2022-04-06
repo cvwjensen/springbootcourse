@@ -6,7 +6,6 @@ import dk.lundogbendsen.sprinbootcourse.persistence.education.model.Teacher;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.CourseRepository;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.StudentRepository;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.repository.TeacherRepository;
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -152,7 +148,8 @@ public class BasicQueriesTest {
     @Test
     public void deleteTeacherJohnson_without_updating_courses() {
         // This fails because Teacher is not owning the relation, and therefore is rejected by foreign key constraint on Courses -> Teacher
-        teacherRepository.delete(johnson);
+        Teacher teacher = teacherRepository.findById(johnson.getId()).get();
+        teacherRepository.delete(teacher);
         assertThrows(Exception.class, () -> teacherRepository.flush());
     }
 
@@ -190,10 +187,9 @@ public class BasicQueriesTest {
         courseRepository.save(courseMath);
         courseRepository.flush();
 
-        final Student student = studentRepository.findById(jim.getId()).get();
-        // Tell entity manager to refresh the student because the cached version is not updated with the courses set above.
-        em.refresh(student);
-        assertEquals(2, student.getCourses().size());
+        // Tell entity manager to refresh (rehydrate) the student (jim) from database because the cached version is not updated with the courses set above.
+        em.refresh(jim);
+        assertEquals(2, jim.getCourses().size());
     }
 
     @Test
