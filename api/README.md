@@ -224,6 +224,22 @@ The latter approach is recommended.
 
 Use the project *springbootcourse/api/person-service-api* as a starting point for the following exercises.
 
+### Exercise 0: fix compile errors in springbootcourse/api/person-service-api
+The api project require a PersonService which is currently not on the classpath.
+
+But you made a person-service-starter in one of the previous exercises, and now it is time to use it.
+
+Update the pom.xml to include the person-starter-demo as a dependency.
+
+#### Solution
+
+```xml
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>person-service-starter</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+```
 
 ### Exercise 1: ExceptionHandlers in Controllers
 The PersonService throws a PersonCreateException in the create method if the Person object already contains an id. 

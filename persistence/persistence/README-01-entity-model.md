@@ -63,6 +63,7 @@ public class Teacher {
 - Hint: The relations between Student and Course are BI-DIRECTIONAL. Likewise are relations between Teacher and Course. 
   This means that one of the entities "give up" their end of the relation using the "mappedby" option in the relational annotation.
 
+
 #### Solution
 ```java
 @Entity

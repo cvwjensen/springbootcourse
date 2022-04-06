@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>person-service-starter-demo</artifactId>
+    <artifactId>person-service-starter</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
