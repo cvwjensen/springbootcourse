@@ -144,7 +144,9 @@ In order to see the SQL output, add this line to your application configuration:
 Then run the application and inspect the logging. Notice how it starts out dropping any table if it exists. It cleans everything up and starts out fresh.
 This is very nice in the development phase on your local machine where you make a lot of changes. But when the Entity model starts stabilizing or when you deploy to a test/prod environment, you probably don't want the application to wipe the database on every start. 
 
-You can set **spring.jpa.hibernate.ddl-auto** explicitly and the standard Hibernate property values are _none, validate, update, create-drop_. Spring Boot chooses a default value for you based on whether it thinks **your database is embedded (default create-drop)** or not (default none). An embedded database is detected by looking at the Connection type: hsqldb, h2 and derby are embedded, the rest are not. Be careful when switching from in-memory to a “real” database that you don’t make assumptions about the existence of the tables and data in the new platform. You either have to set ddl-auto explicitly, or use one of the other mechanisms to initialize the database.
+You can set **spring.jpa.hibernate.ddl-auto** explicitly and the standard Hibernate property values are _none, validate, update, create-drop_. Spring Boot chooses a default value for you based on whether it thinks **your database is embedded (default create-drop)** or not (default none). 
+An embedded database is detected by looking at the Connection type: hsqldb, h2 and derby are embedded, the rest are not. 
+Be careful when switching from in-memory to a “real” database that you don’t make assumptions about the existence of the tables and data in the new platform. You either have to set ddl-auto explicitly, or use one of the other mechanisms to initialize the database.
 
 
 #### Solution
