@@ -60,6 +60,8 @@ public class Teacher {
 
 - Update the 3 domain classes to Entities by adding the @Entity annotation and a Long id annotated with @Id and @GeneratedValue.
 - Add appropriate relationship annotations on the entities.
+- Hint: The relations between Student and Course are BI-DIRECTIONAL. Likewise are relations between Teacher and Course. 
+  This means that one of the entities "give up" their end of the relation using the "mappedby" option in the relational annotation.
 
 #### Solution
 ```java
