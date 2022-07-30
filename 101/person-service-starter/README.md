@@ -76,7 +76,7 @@ Content of the `pom.xml`:
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
-      <version>2.6.4</version>
+      <version>2.7.2</version>
     </dependency>
     <dependency>
       <groupId>org.example</groupId>
@@ -159,10 +159,10 @@ is `com.example.personservicestarter.PersonServiceConfiguration` (or whatever yo
 
 #### Solution
 
-Content of `src/main/resources/META-INF/spring.factories`:
+Content of `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`:
 
 ```
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.example.personservicestarter.PersonServiceConfiguration
+com.example.personservicestarter.PersonServiceConfiguration
 ```
 
 ### Exercise 7: Build and install the project

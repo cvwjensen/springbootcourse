@@ -198,15 +198,23 @@ In this exercise you'll inspect the list fo dependencies in order to find out ex
 Auto configuration kicks in, when Spring detects the @EnableAutoConfiguration annotation.
 The annotation enable auto-configuration of the Spring Application Context, attempting to guess and configure beans that you are likely to need. Auto-configuration classes are usually applied based on your classpath and what beans you have defined.
 
+For SpringBoot < 2.7.0:
+
 - Open the `META-INF/spring.factories` of the `spring-boot-autoconfigure` dependency (Ctrl + Shift + N) (You may have to press the combination twice to extend the search into dependencies)
 - Find the `# Auto Configure` section (around line 20).
-- Here is a key called `org.springframework.boot.autoconfigure.EnableAutoConfiguration` with a multi-line value.
-- The key is a reference to an actual class - open it by ctrl-clicking it (or press Ctrl + B).
-- This opens up the annotation `@EnableAutoConfiguration`.
-- One of the first things it does, is `@Import(AutoConfigurationImportSelector.class)`
-- The `AutoConfigurationImportSelector` contains the logic for loading the auto-configuration classes referenced in the multi-line value from before.
+- Here is a key called `org.springframework.boot.autoconfigure.EnableAutoConfiguration` with a multi-line value which becomes to input list to the `AutoConfigurationImportSelector`.
+
+For SpringBoot >= 2.7.0:
+
+The list of configurations to load have been extracted and isolated into its own file, and the loading mechanisms have been refactored.
+
+- Open the `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` of the`spring-boot-autoconfigure` dependency (Ctrl + Shift + N) (You may have to press the combination twice to extend the search into dependencies)
+
+_AutoConfigurationImportSelector_
+- The `AutoConfigurationImportSelector` contains the logic for loading the auto-configuration classes referenced in the list of references loaded from either `META-INF/spring.factories` or `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`. 
 - Find and open one of the auto-configuration classes `MongoAutoConfiguration`.
 - This is how Springboot sets up mongo for you, if you include the
+
 ```
 <dependency>
     <groupId>org.springframework.boot</groupId>
@@ -215,7 +223,7 @@ The annotation enable auto-configuration of the Spring Application Context, atte
 ```
 - Below is the content of `MongoAutoConfiguration`: 
 ```
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDatabaseFactory")
@@ -223,8 +231,10 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoClient.class)
-	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers, MongoClientSettings settings) {
-		return new MongoClientFactory(builderCustomizers.orderedStream().collect(Collectors.toList())).createMongoClient(settings);
+	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
+			MongoClientSettings settings) {
+		return new MongoClientFactory(builderCustomizers.orderedStream().collect(Collectors.toList()))
+				.createMongoClient(settings);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -237,10 +247,13 @@ public class MongoAutoConfiguration {
 		}
 
 		@Bean
-		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties, Environment environment) {
+		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties,
+				Environment environment) {
 			return new MongoPropertiesClientSettingsBuilderCustomizer(properties, environment);
 		}
+
 	}
+
 }
 ```
 - It is an example of how the @ConditionalNNN annotations work. In this case the @Beans will be setup if the class `MongoClient` is present on the classpath of the application.
