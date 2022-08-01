@@ -135,7 +135,7 @@ public Person getPerson() {
 Sometimes you want to control the response headers in the Controller. In this case you can make the method return a ResponseEntity. 
 The ResponseEntity represents both http status code, headers and content in one object.
 
-- Make a method `public ResponseEntity<String> getPersonSpecial()`
+- Make a method `public ResponseEntity<Person> getPersonSpecial()`
 - Annotate with `@GetMapping("person-special")`
 - Make a Person object.
 - Make a new ResponseEntity object for a Person object.
