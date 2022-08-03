@@ -219,13 +219,13 @@ public class EducationTests {
     final Teacher smith = Teacher.builder().name("Smith").build();
     final Teacher kayne = Teacher.builder().name("Kayne").build();
 
-    final Course art = Course.builder().subject("art").points(10)
+    final Course art = Course.builder().subject("art").points(5)
             .teacher(johnson)
             .students(Set.of(josh, jane, tom)).build();
     final Course philosophy = Course.builder().subject("philosophy").points(10)
             .teacher(smith)
             .students(Set.of(tom, anna, jane)).build();
-    final Course math = Course.builder().subject("math").points(10)
+    final Course math = Course.builder().subject("math").points(15)
             .teacher(kayne)
             .students(Set.of(josh, tom, anna)).build();
 
