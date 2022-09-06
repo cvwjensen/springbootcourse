@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,8 +37,8 @@ public class MyRestController {
     @PostMapping("/file")
     public String receiveFile(@RequestParam("file") MultipartFile file, @RequestHeader(name = "Content-Type") String contentType) throws IOException {
         final String content = new String(file.getBytes());
-        System.out.println("content = " + content);
-        System.out.println("contentType = " + contentType);
+        log.debug("content = " + content);
+        log.debug("contentType = " + contentType);
         return file.getOriginalFilename();
     }
 
