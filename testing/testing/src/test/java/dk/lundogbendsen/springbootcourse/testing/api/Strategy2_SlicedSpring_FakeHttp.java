@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -25,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 // Sliced SpringContext
 // Register the classes in the list as SpringBean
-@WebMvcTest({PersonController.class, MyService.class})
+@WebMvcTest({PersonController.class})
 public class Strategy2_SlicedSpring_FakeHttp {
 
     @Autowired
@@ -35,6 +36,8 @@ public class Strategy2_SlicedSpring_FakeHttp {
     @MockBean
     private PersonRepository personRepository;
 
+    @SpyBean
+    MyService myService;
     @BeforeEach
     public void init() {
         Person person = new Person();
