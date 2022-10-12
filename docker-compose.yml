@@ -28,6 +28,15 @@ services:
     ports:
       - 8080:8080
 
+  vault:
+    image: vault
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: myroot
+    ports:
+      - 8200:8200
+    cap_add:
+      - IPC_LOCK
+
   elasticsearch:
     image: elasticsearch:7.9.2
     container_name: elasticsearch
