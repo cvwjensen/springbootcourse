@@ -52,7 +52,7 @@ public class Student {
 @AllArgsConstructor
 public class Teacher {
     private String name;
-    private Set<Course> teaches;
+    private Set<Course> courses;
 }
 ```
 
