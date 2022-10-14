@@ -115,7 +115,7 @@ public class Teacher {
   private Long id;
   private String name;
   @OneToMany(mappedBy = "teacher")
-  private Set<Course> teaches;
+  private Set<Course> courses;
 }
 ```
 
