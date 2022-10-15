@@ -52,7 +52,7 @@ public class Student {
 @AllArgsConstructor
 public class Teacher {
     private String name;
-    private Set<Course> courses;
+    private Set<Course> teaches;
 }
 ```
 
@@ -115,7 +115,7 @@ public class Teacher {
   private Long id;
   private String name;
   @OneToMany(mappedBy = "teacher")
-  private Set<Course> courses;
+  private Set<Course> teaches;
 }
 ```
 
