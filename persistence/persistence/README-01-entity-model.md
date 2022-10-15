@@ -203,6 +203,7 @@ Hibernate: alter table course_students add constraint FKh6irfl8rj4jgb3xrlyxsr2bd
 ```java
 @DataJpaTest
 public class EducationTests {
+    @Autowired EntityManager em;
     @Autowired
     CourseRepository courseRepository;
     @Autowired

@@ -16,6 +16,18 @@ spring.cloud.config.server.git.uri=git@github.com:<your repo>/config-server.git
 
 This will make the config-server listen to port 8888, and access the github repo (eg `cvwjensen/config-server`).
 
+- Also enable the config-server autoconfiguration by adding `@EnableConfigServer` on the main class like:
+
+```
+@SpringBootApplication
+@EnableConfigServer
+public class ConfigServerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ConfigServerApplication.class, args);
+    }
+}
+```
+
 ### 3: Start the config server
 
 Now the server should be listening on port 8888 and have access to your repo.
