@@ -7,7 +7,7 @@
 - add new file: application.properties with the property: `server.port=8082`
 - commit the file.
 
-### Exercise 2: Create a new web-project called `Config-Server`
+### Exercise 2: Create a new Web+ConfigServer project called `Config-Server`
 
 - update the application.properties with the following content:
 
