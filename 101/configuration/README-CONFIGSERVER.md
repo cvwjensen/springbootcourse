@@ -1,17 +1,20 @@
 ## Exercises Config-Server
 
-### 1: Create a github repo with public access
+### Exercise 1: Create a git repo
 
+- create a folder on your local disk
+- enter the folder and run `git init`
 - add new file: application.properties with the property: `server.port=8082`
-- commit and push the file.
+- commit the file.
 
-### 2: Create a new web-project called `Config-Server`
+### Exercise 2: Create a new web-project called `Config-Server`
 
 - update the application.properties with the following content:
 
 ```properties
 server.port=8888
-spring.cloud.config.server.git.uri=git@github.com:<your repo>/config-server.git
+#spring.cloud.config.server.git.uri=git@github.com:cvwjensen/config-server/config-server.git
+spring.cloud.config.server.git.uri=file:///tmp/config-repo
 ```
 
 This will make the config-server listen to port 8888, and access the github repo (eg `cvwjensen/config-server`).
@@ -28,7 +31,7 @@ public class ConfigServerApplication {
 }
 ```
 
-### 3: Start the config server
+### Exercise 3: Start the config server
 
 Now the server should be listening on port 8888 and have access to your repo.
 
@@ -36,19 +39,37 @@ Now the server should be listening on port 8888 and have access to your repo.
 
 You should see a json structure containing the content of your application.properties.
 
-
  
 ## Exercises Client
 
-### 1: Create new Web+Config project
+### 1: Create new Web+Config+Actuator project
 
 Inspect the pom.xml and see that you now have a new section called `<dependencyManagement>` including `spring-cloud-dependencies`. ConfigServer belongs to Spring Cloud stuff.
+
+The dependency for the config client is: 
+
+```xml
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+```
+
 
 Update the application.properties with the following content:
 
 ```properties
 spring.application.name=<your-well-describing-name>
-spring.config.import=optional:configserver
+spring.config.import=optional:configserver:
 server.port=8084
 ```
 
@@ -69,10 +90,23 @@ If you remove `optional`, then the application will not start if it cannot pull 
 
 - What port does the client listen to? It should be port `8082`. 
 
-So the configuration from config-server has precedence over local configuration!
+So the configuration from config-server takes precedence over local configuration!
 
+### 3: Inspect the configuration your clients config using Actuator
 
-### 3: Add a new property file on the repo with the name of your app. Eg: `client1.properties`.
+- Add the following property:
+
+```properties
+management.endpoints.web.exposure.include=*
+```
+
+This expopses all endpoint of the Actuator letting you inspect every little detail of the internals of your application.
+
+- Restart the client.
+- Open a browser on: `http://localhost:8082/actuator/env`
+- Search for a section with `configserver:file`. Here you'll see the configuration that it has available from different property sources. from the config server. The topmost has the most precedence.
+
+### 4: Add a new property file on the repo with the name of your app. Eg: `client1.properties`.
 
 - Specify `server.port=8085`.
 - Commit/push the file to the repo.
@@ -84,7 +118,7 @@ So this tells us that values from `application.properties` are default values fo
 
 But if the config-server can find a specific property file, it's values will take precedence.
 
-### 4: Activate the `demo` profile.
+### 5: Activate the `demo` profile.
 
 - Add the following line to your local application.properties: `spring.profiles.active=demo`.
 - Add a new file to the config-server-repo with the name: `<your-app-name>-demo.properties`.
