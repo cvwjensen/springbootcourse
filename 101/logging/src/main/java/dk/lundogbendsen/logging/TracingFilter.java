@@ -2,7 +2,7 @@ package dk.lundogbendsen.logging;
 
 import org.slf4j.MDC;
 
-import javax.servlet.*;
+import jakarta.servlet.*;
 import java.io.IOException;
 import java.util.UUID;
 

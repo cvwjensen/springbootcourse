@@ -14,7 +14,7 @@ public class PersonController {
         this.myService = myService;
     }
 
-    @PostMapping
+    @PostMapping("/")
     public Long createPerson(@RequestBody String name) {
         Person person = new Person();
         person.setName(name);

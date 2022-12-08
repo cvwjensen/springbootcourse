@@ -15,7 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 // Alternative 3: Use Slice
 @DataJpaTest
+@EnableJpaAuditing
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class BasicQueriesTest {
 

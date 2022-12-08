@@ -3,7 +3,7 @@ package dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetoone;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Getter

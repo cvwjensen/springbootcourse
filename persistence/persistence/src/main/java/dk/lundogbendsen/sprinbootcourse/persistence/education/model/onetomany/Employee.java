@@ -3,7 +3,7 @@ package dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetomany;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Data
