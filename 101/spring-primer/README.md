@@ -23,7 +23,7 @@ public class SpringPrimerApplication {
 
 ### Exercise 2 - Make a Bean with the @Bean-option
 - Create a class TextUpperCaser class that have a method that takes a String and returns the String UPPERCASED.
-- Register TextUpperCaser as a SpringBean using Option 2.
+- Register TextUpperCaser as a SpringBean using the @Bean option.
 - Retrieve the TextUpperCaser bean and use it.
                                
 #### Solution:
@@ -39,6 +39,7 @@ public class TextUpperCaser {
 
 The SpringPrimerApplication:
 ```
+@Configuration
 public class SpringPrimerApplication {
 
     public static void main(String[] args) {
