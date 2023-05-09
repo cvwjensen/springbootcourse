@@ -15,7 +15,7 @@
 ```java
 @RestController
 public class MyRestController {
-    @GetMapping
+    @GetMapping("/")
     public String helloWorld() {
         return "Hello World";
     }
@@ -34,7 +34,7 @@ You can map a method parameter to either a query parameter or a form field using
 ```java
 @RestController
 public class MyRestController {
-    @GetMapping
+    @GetMapping("/")
     public String helloWorld(@RequestParam String message) {
         return "Hello World: " + message;
     }
@@ -69,7 +69,7 @@ You can have Springboot convert the request body to a Pojo. For instance is the 
 
 #### Solution
 ```java
-@PostMapping
+@PostMapping("/")
 public void receivePerson(@RequestBody Person person) {
     System.out.println("person = " + person);
 }
