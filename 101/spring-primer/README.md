@@ -40,6 +40,7 @@ public class TextUpperCaser {
 The SpringPrimerApplication:
 ```
 @Configuration
+@ComponentScan
 public class SpringPrimerApplication {
 
     public static void main(String[] args) {
