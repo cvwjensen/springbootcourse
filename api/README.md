@@ -78,14 +78,14 @@ public void receivePerson(@RequestBody Person person) {
 ### Exercise 5: Upload file
 A file upload is really just a http request where the content part should be interpretated as a file. But we have to receive it as a MultipartFile object. Let's try to receive an upload:
 - Make a method `public String receiveFile(@RequestParam("file") MultipartFile file)`
-- Annotate the method with @PostMapping("/file") to instruct Spring to map the method to the POST verb and the path /file.
+- Annotate the method with @PostMapping("/upload-file") to instruct Spring to map the method to the POST verb and the path /upload-file.
 - In the method take out the bytes from the file, convert them to a new String() and return that String.
 - Restart the application
-- Run `curl localhost:8080/file -F "file=@docker-compose.yml"` (or some other local text-file)
+- Run `curl localhost:8080/upload-file -F "file=@docker-compose.yml"` (or some other local text-file)
 
 #### Solution
 ```java
-@PostMapping("/file")
+@PostMapping("/upload-file")
 public String receiveFile(@RequestParam("file") MultipartFile file) throws IOException {
     final String content = new String(file.getBytes());
     System.out.println("content = " + content);
@@ -99,11 +99,11 @@ You can map any header to your method by using the @RequestHeader annotation.
 - Modify the receiveFile method by adding the parameter `@RequestHeader(name = "Content-Type") String contentType`.
 - Print out the content type to the console.
 - Restart the application.
-- Run `curl localhost:8080/file -F "file=@docker-compose.yml"` (or some other local text-file)
+- Run `curl localhost:8080/upload-file -F "file=@docker-compose.yml"` (or some other local text-file)
 
 #### Solution
 ```java
-@PostMapping("/file")
+@PostMapping("/upload-file")
 public String receiveFile(@RequestParam("file") MultipartFile file, @RequestHeader(name = "Content-Type") String contentType) throws IOException {
     final String content = new String(file.getBytes());
     System.out.println("content = " + content);
