@@ -176,8 +176,8 @@ You can use the ResponseEntity to serve files to the client.
 
 #### Solution
 ```java
-  @GetMapping(path = "/download")
-  public ResponseEntity<Resource> download(String param) throws IOException {
+  @GetMapping("/download")
+  public ResponseEntity<Resource> download() throws IOException {
       File file = new File("api/http-status-codes.png");
       InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
