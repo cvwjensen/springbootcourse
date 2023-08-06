@@ -6,6 +6,7 @@
 
 - Create a naked Springboot application called SpringPrimer.
 - Outcomment the @SpringBootApplication annotation.
+- Add @ComponentScan to the SpringPrimerApplication class.
 - Set the curser on the run method and to extract a variable called context (Ctrl + Alt + V).
 - Set a breakpoint on the line.
 - Debug the application (Shift + F9) and use the context to inspect the beans - how many beans are there, and what kinds are they?
@@ -13,6 +14,7 @@
 #### Solution:
 ```
 // @SpringBootApplication
+@ComponentScan
 public class SpringPrimerApplication {
 
     public static void main(String[] args) {
@@ -21,9 +23,10 @@ public class SpringPrimerApplication {
 }
 ```
 
-### Exercise 2 - Make a Bean with the @Bean-option
+### Exercise 2 - Make a Bean with @Bean
 - Create a class TextUpperCaser class that have a method that takes a String and returns the String UPPERCASED.
-- Register TextUpperCaser as a SpringBean using Option 2.
+- Register TextUpperCaser as a SpringBean using @Bean instruction.
+- Remember that the @Bean annotated method must de defined in a class annotated with @Configuration. 
 - Retrieve the TextUpperCaser bean and use it.
                                
 #### Solution:
@@ -37,16 +40,10 @@ public class TextUpperCaser {
 }
 ```
 
-The SpringPrimerApplication:
+The Configuration class
 ```
-public class SpringPrimerApplication {
-
-    public static void main(String[] args) {
-        final ConfigurableApplicationContext context = SpringApplication.run(SpringPrimerApplication.class, args);
-        final TextUpperCaser bean = context.getBean(TextUpperCaser.class);
-        System.out.println(bean.toUpperCase("Hello World"));
-    }
-
+@Configuration
+public class MyConfiguration {
     @Bean
     public TextUpperCaser textUpperCaser() {
         return new TextUpperCaser();
@@ -54,7 +51,23 @@ public class SpringPrimerApplication {
 }
 ```
 
-### Exercise 3 - Make a Bean with the @Service option
+
+The SpringPrimerApplication:
+```
+@ComponentScan
+public class SpringPrimerApplication {
+    public static void main(String[] args) {
+        final ConfigurableApplicationContext context = SpringApplication.run(SpringPrimerApplication.class, args);
+        TextUpperCaser bean = context.getBean(TextUpperCaser.class);
+        String helloWorld = bean.toUpperCase("Hello World");
+        System.out.println("helloWorld = " + helloWorld);
+    }
+}
+```
+
+
+### Exercise 3 - Make a Bean with the @Service instruction
+- Delete the Configuration class from exercise 2.
 - Modify the TextUpperCaser to be a @Service.
 - Add @ComponentScan to the SpringPrimerApplication class.
 - Retrieve the TextUpperCaser bean and use it.
@@ -83,7 +96,7 @@ public class SpringPrimerApplication {
 }
 ```
 
-### Exercise 4 - Wiring using Option 1 (@Autowired)
+### Exercise 4 - Wiring using @Autowired
 - Create two classes, ServiceA and ServiceB, both without any methods.
 - Make both of them Beans by using one of the previous methods.  
 - In ServiceA create a class field of type ServiceB.
@@ -126,7 +139,7 @@ public class SpringPrimerApplication {
 }
 ```
 
-### Exercise 5 - Wiring using Option 2 (Constructor injection)
+### Exercise 5 - Wiring using Constructor injection
 - Create two classes, ServiceA and ServiceB, both without any methods.
 - Make both of them Beans by using one of the previous methods.
 - In ServiceA create a class field of type ServiceB.
