@@ -1,6 +1,6 @@
 package dk.lundogbendsen.springbootcourse.testing.example.bookstore.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity

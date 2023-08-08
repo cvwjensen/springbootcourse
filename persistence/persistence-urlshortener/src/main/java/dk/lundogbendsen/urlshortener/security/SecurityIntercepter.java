@@ -3,14 +3,12 @@ package dk.lundogbendsen.urlshortener.security;
 import dk.lundogbendsen.urlshortener.model.User;
 import dk.lundogbendsen.urlshortener.service.UserService;
 import dk.lundogbendsen.urlshortener.service.exceptions.AccessDeniedException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.util.Base64;
 
 public class SecurityIntercepter implements HandlerInterceptor {

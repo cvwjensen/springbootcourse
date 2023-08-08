@@ -1,6 +1,6 @@
-insert into user(username, password) values('user1', 'password1');
-insert into user(username, password) values('user2', 'password2');
-insert into user(username, password) values('user3', 'password3');
+insert into users(username, password) values('user1', 'password1');
+insert into users(username, password) values('user2', 'password2');
+insert into users(username, password) values('user3', 'password3');
 
 insert into token(token, protect_token, target_url, user_username) values('token1', null, 'https://dr.dk', 'user1');
 

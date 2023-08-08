@@ -1,6 +1,6 @@
 package dk.lundogbendsen.urlshortener.security;
 
-import javax.servlet.*;
+import jakarta.servlet.*;
 import java.io.IOException;
 
 public class SecurityFilter implements Filter {

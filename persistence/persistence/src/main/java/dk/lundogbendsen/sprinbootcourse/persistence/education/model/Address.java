@@ -1,6 +1,6 @@
 package dk.lundogbendsen.sprinbootcourse.persistence.education.model;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Address {

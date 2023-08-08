@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -72,7 +72,7 @@ class RestTemplateTests {
 
         ResponseEntity<Person> response = restTemplate.postForEntity(url + "/pojo", person, Person.class);
         final Person responsePerson = response.getBody();
-        final HttpStatus statusCode = response.getStatusCode();
+        HttpStatusCode statusCode = response.getStatusCode();
         final HttpHeaders responseHeaders = response.getHeaders();
 
         assertEquals("Olga", responsePerson.getName());
