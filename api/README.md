@@ -216,6 +216,7 @@ Since you have added the XML capable converter as a dependency in the previous e
 
 ## Exercises - Section 2: Exception Handling
 When exceptions happens, Springboot gives you some basic handling out of the box. 
+
 If errors are client side, it has a variety of handlers that produce meaningful error reponses for that. All other errors result in a 500 error.
 
 As always Springboot lets you take complete control by adding up some ExceptionHandlers. You can control exceptions directly in the controller using the @ExceptionHandler annotation, or you can create a @RestControllerAdvice that handles exceptions across many controllers.
@@ -224,21 +225,32 @@ The latter approach is recommended.
 
 Use the project *springbootcourse/api/person-service-api* as a starting point for the following exercises.
 
-### Exercise 0: fix compile errors in springbootcourse/api/person-service-api
-The api project require a PersonService which is currently not on the classpath.
+### Exercise 0: make springbootcourse/api/person-service-api project work
+The api project requires a PersonService which is currently not on the classpath.
 
 But you made a person-service-starter in one of the previous exercises, and now it is time to use it.
 
 Update the pom.xml to include the person-starter-demo as a dependency.
+
+
+The `api/person-service-api/src/main/java/dk/lundogbendsen/restassignmentapi/controllers/PersonController.java` is a controller that uses a PersonService to create, update and delete persons.
+But right now all the code inside is commented out. You must uncomment the code to have a fully functioning PersonController to work with in the following exercises.
+
 
 #### Solution
 
 ```xml
         <dependency>
             <groupId>org.example</groupId>
+            <artifactId>person-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
             <artifactId>person-service-starter</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
 ```
 
 ### Exercise 1: ExceptionHandlers in Controllers

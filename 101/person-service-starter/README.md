@@ -164,6 +164,7 @@ Now you are done creating the starter - it is time to test it in a real project.
 
 - Create a Naked SpringBoot project.
 - Add a dependency to the person-service-starter.
+- Add a dependency to the person-service (it is NOT included in the person-service-starter)
 - Extract the PersonService bean and test it.
 
 #### Solution
@@ -179,4 +180,19 @@ public class Demo1Application {
         System.out.println("personService.list() = " + personService.list());
     }
 }
+```
+
+pom.xml - add these two dependencies
+
+```xml
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>person-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>person-service-starter</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 ```
