@@ -64,13 +64,8 @@ Content of the `pom.xml`:
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.example</groupId>
-  <artifactId>person-service-starter-demo</artifactId>
+  <artifactId>person-service-starter</artifactId>
   <version>1.0-SNAPSHOT</version>
-
-  <properties>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -82,7 +77,9 @@ Content of the `pom.xml`:
       <groupId>org.example</groupId>
       <artifactId>person-service</artifactId>
       <version>1.0-SNAPSHOT</version>
+      <optional>true</optional>
     </dependency>
+
   </dependencies>
 </project>
 ```
@@ -97,11 +94,6 @@ With the project foundation in place it is time to do some actual coding. We sho
 
 #### Solution
 ```
-package com.example.personservicestarter;
-
-import dk.lundogbendsen.springbootcourse.api.personservice.service.PersonService;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PersonServiceConfiguration {
@@ -127,13 +119,6 @@ create one.
 
 #### Solution
 ```
-package com.example.personservicestarter;
-
-import dk.lundogbendsen.springbootcourse.api.personservice.service.PersonService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnClass(PersonService.class)
@@ -144,7 +129,6 @@ public class PersonServiceConfiguration {
     public PersonService personService() {
         return new PersonService();
     }
-
 }
 ```
 
@@ -154,14 +138,14 @@ The last element of a Spring-Boot starter is the file spring.factories. This fil
 and will be sure to include your beans in the client project.
 
 - create a new file under `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`
-Add a line with this content: `com.example.personservicestarter.PersonServiceConfiguration` (or whatever your configuration file is called)
+Add a line with this content: `org.example.personservicestarter.PersonServiceConfiguration` (or whatever your configuration file is called)
 
 #### Solution
 
 Content of `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`:
 
 ```
-com.example.personservicestarter.PersonServiceConfiguration
+org.example.personservicestarter.PersonServiceConfiguration
 ```
 
 ### Exercise 7: Build and install the project
@@ -186,12 +170,6 @@ Now you are done creating the starter - it is time to test it in a real project.
 
 ```java
 package com.example.demo;
-
-import dk.lundogbendsen.springbootcourse.api.personservice.service.PersonService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class Demo1Application {
