@@ -98,7 +98,7 @@ So the configuration from config-server takes precedence over local configuratio
 
 ```properties
 management.endpoints.web.exposure.include=*
-management.endpoint.configprops.show-values=always
+management.endpoint.env.show-values=always
 
 ```
 
