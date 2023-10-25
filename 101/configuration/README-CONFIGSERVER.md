@@ -98,6 +98,8 @@ So the configuration from config-server takes precedence over local configuratio
 
 ```properties
 management.endpoints.web.exposure.include=*
+management.endpoint.configprops.show-values=always
+
 ```
 
 This expopses all endpoint of the Actuator letting you inspect every little detail of the internals of your application.
