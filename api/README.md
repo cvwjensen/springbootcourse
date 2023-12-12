@@ -81,7 +81,7 @@ A file upload is really just a http request where the content part should be int
 - Annotate the method with @PostMapping("/upload-file") to instruct Spring to map the method to the POST verb and the path /upload-file.
 - In the method take out the bytes from the file, convert them to a new String() and return that String.
 - Restart the application
-- Run `curl localhost:8080/upload-file -F "file=@docker-compose.yml"` (or some other local text-file)
+- Run `curl localhost:8080/upload-file -F "file=@pom.xml"` (or some other local text-file)
 
 #### Solution
 ```java
@@ -99,7 +99,7 @@ You can map any header to your method by using the @RequestHeader annotation.
 - Modify the receiveFile method by adding the parameter `@RequestHeader(name = "Content-Type") String contentType`.
 - Print out the content type to the console.
 - Restart the application.
-- Run `curl localhost:8080/upload-file -F "file=@docker-compose.yml"` (or some other local text-file)
+- Run `curl localhost:8080/upload-file -F "file=@pom.xml"` (or some other local text-file)
 
 #### Solution
 ```java
