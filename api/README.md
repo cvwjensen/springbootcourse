@@ -52,7 +52,7 @@ You can map a method parameter to some part of the request path using the @PathV
 
 #### Solution
 ```java
-@GetMapping("{id}")
+@GetMapping("/{id}")
 public Long pathMapping(@PathVariable Long id) {
     return id;
 }
