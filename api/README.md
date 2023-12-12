@@ -61,7 +61,7 @@ public Long pathMapping(@PathVariable Long id) {
 ### Exercise 4: Map input to POJO
 You can have Springboot convert the request body to a Pojo. For instance is the client is sending Json, you could make a Model representing the Json and Springboot will make a Pojo with the input.
 - Make a class Person with fields firstName and lastName. Add setters and getters (Hint: Lombok).
-- Make a method `public void receivePerson(Person person)`.
+- Make a method `public void receivePerson(Person person)` in the RestController from exercise 2.
 - Annotate the method with @PostMapping to instruct Spring to map the POST verb.
 - Annotate the person parameter with @RequestBody to instruct Spring to convert the request body to a Person object
 - Restart the app.
