@@ -137,8 +137,8 @@ public class PersonServiceConfiguration {
 The last element of a Spring-Boot starter is the file spring.factories. This file is processed by SpringBoot AutoConfiguration
 and will be sure to include your beans in the client project.
 
-- create a new file under `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`
-Add a line with this content: `org.example.personservicestarter.PersonServiceConfiguration` (or whatever your configuration file is called)
+- create a new file in the folder `src/main/resources/META-INF/spring/` called `org.springframework.boot.autoconfigure.AutoConfiguration.imports`
+- Add a line with a fully qualified name reference to your PersonServiceConfiguration, eg: `org.example.personservicestarter.PersonServiceConfiguration`
 
 #### Solution
 
