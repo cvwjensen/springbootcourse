@@ -200,7 +200,7 @@ The DispatcherServlet will then try to convert the result of the controller to t
 </dependency>
 ```
 - Restart the Application.
-- Run `curl localhost:8080/person -H "Accept: application/xml`.
+- Run `curl localhost:8080/person -H "Accept: application/xml"`.
 
 
 ### Exercise 11: Client sends XML
