@@ -15,5 +15,5 @@ public class Order {
     @GeneratedValue
     private Long id;
     @ManyToMany
-    Set<Product> products;
+    Set<OrderItem> orderItems;
 }

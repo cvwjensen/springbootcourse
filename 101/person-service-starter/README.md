@@ -71,7 +71,7 @@ Content of the `pom.xml`:
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.2</version>
     </dependency>
     <dependency>
       <groupId>org.example</groupId>

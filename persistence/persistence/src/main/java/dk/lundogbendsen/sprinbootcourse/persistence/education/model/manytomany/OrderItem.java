@@ -12,10 +12,10 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-public class Product {
+public class OrderItem {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToMany(mappedBy = "products")
+    @ManyToMany(mappedBy = "orderItems")
     Set<Order> orders;
 }

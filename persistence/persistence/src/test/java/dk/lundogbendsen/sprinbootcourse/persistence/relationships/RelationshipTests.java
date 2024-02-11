@@ -2,7 +2,7 @@ package dk.lundogbendsen.sprinbootcourse.persistence.relationships;
 
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.*;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.manytomany.Order;
-import dk.lundogbendsen.sprinbootcourse.persistence.education.model.manytomany.Product;
+import dk.lundogbendsen.sprinbootcourse.persistence.education.model.manytomany.OrderItem;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetomany.Department;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetomany.Employee;
 import dk.lundogbendsen.sprinbootcourse.persistence.education.model.onetoone.Rifle;
@@ -37,25 +37,25 @@ public class RelationshipTests {
         // resulting in deletion of rows of association in case of changes to list...
 
         // Demo setup: create an order with 3 products:
-        final Product product1 = new Product();
-        final Product product2 = new Product();
-        final Product product3 = new Product();
+        final OrderItem orderItem1 = new OrderItem();
+        final OrderItem orderItem2 = new OrderItem();
+        final OrderItem orderItem3 = new OrderItem();
         final Order order1 = new Order();
-        order1.setProducts(Set.of(product1, product2, product3));
+        order1.setOrderItems(Set.of(orderItem1, orderItem2, orderItem3));
 
-        entityManager.persist(product1);
-        entityManager.persist(product2);
-        entityManager.persist(product3);
+        entityManager.persist(orderItem1);
+        entityManager.persist(orderItem2);
+        entityManager.persist(orderItem3);
         entityManager.persist(order1);
         entityManager.flush();
         entityManager.clear();
 
         // Fetch the order
-        Product productToRemove = entityManager.find(Product.class, product3.getId());
+        OrderItem orderItemToRemove = entityManager.find(OrderItem.class, orderItem3.getId());
         Order order = entityManager.find(Order.class, order1.getId());
 
         // Remove a product
-        order.getProducts().remove(productToRemove);
+        order.getOrderItems().remove(orderItemToRemove);
         entityManager.persist(order);
         entityManager.flush();
         entityManager.clear();
@@ -63,7 +63,7 @@ public class RelationshipTests {
 
         order = entityManager.find(Order.class, order1.getId());
 
-        order.getProducts().add(product3);
+        order.getOrderItems().add(orderItem3);
         entityManager.persist(order);
         entityManager.flush();
         entityManager.clear();
@@ -75,8 +75,8 @@ public class RelationshipTests {
 
     @Test
     public void testManyToMany() {
-        Product p1 = new Product();
-        Product p2 = new Product();
+        OrderItem p1 = new OrderItem();
+        OrderItem p2 = new OrderItem();
         Order o1 = new Order();
         Order o2 = new Order();
 
@@ -92,7 +92,7 @@ public class RelationshipTests {
         entityManager.flush();
         entityManager.clear();
 
-        final Product product1 = entityManager.find(Product.class, p1.getId());
+        final OrderItem orderItem1 = entityManager.find(OrderItem.class, p1.getId());
         final Order order2 = entityManager.find(Order.class, o2.getId());
     }
 
