@@ -35,7 +35,8 @@ server.port=8080
 
 Run the application and find the property using one of the exposed endpoints in the Actuator API.
 
-Hint: you are looking for Configuration Properties.
+Hint: you are looking for Configuration Properties. The ID of the properties endpoint is `configprops`. 
+You can find the list of ids in https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints
 Hint: make sure all endpoints are exposed using the solution from exercise 1.
 
 
@@ -63,7 +64,7 @@ String username;
 String password;
 ```
 
-Find reload the application and find them in the
+Reload the application and find them in the
 
 http://localhost:8080/actuator/configprops
 
@@ -114,11 +115,16 @@ Find the build info at http://localhost:8080/actuator/info
 
 Add team information such as Team name, Contact email, and Team Lead to the info section.
 
+Custom properties like these are available throguh the `info` endpoint if the 'env' property is enabled:
+
+`management.info.env.enabled=true`
+
 See the info exposed through the Actuator endpoint.
 
 #### Solution
 Add the following entries to the application.properties:
 ```
+management.info.env.enabled=true
 info.myname=christian
 info.team.team-name=Team Alfa-Bravo
 info.team.team-lead=The Boss
@@ -138,45 +144,81 @@ Hit the http://localhost:8080/actuator/info
 - Make info available: `management.endpoint.health.show-details=always`.
 - Restart the application and hit the health endpoint to see system status.
 - Hit: http://localhost:8080/actuator/health
+
+What is the status of the overall health check? (DOWN)
+ 
+ 
 - What can we do to make the health check report UP?
 ```commandline
 docker-compose -f ../../docker-compose.yml up rabbit
 ```
 
-### Exercise 2: Create your own health check: ServiceWindowHealthCheck
+NB! It might take 30 seconds for the health check to report UP.
 
-Create a Health Check that reports down if we are in a service-window period. This will help the loadbalancer to stop routing traffic the your service.
+### Exercise 2: Create your own health check: ServiceMaintenanceHealthIndicator
 
-Read the service window period from the `application.properties`.
+Create a Health Check that reports down if the service is in maintenance. 
+
+
+- Create a new class called `ServiceWindowHealthIndicator` that implements `HealthIndicator`.
+- Make it both a `@Component`.
+- Add a boolean field `inMaintenance`.
+- Add a method `setInMaintenance(boolean inMaintenance)` to toggle the maintenance mode.
+- Implement the `health` method to return `Health.down()` if `inMaintenance` is true otherwise `Health.up()`.
+- Hit the http://localhost:8080/actuator/health endpoint and see the status of the service.
 
 
 #### Solution
 ```java
 @Component
-public class ServiceWindowHealthIndicator implements HealthIndicator {
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.forLanguageTag("DK"));
-    @Value("${app.health.serviceWindowStart}")
-    private String serviceWindowStart;
-    @Value("${app.health.serviceWindowEnd}")
-    private String serviceWindowEnd;
+public class ServiceMaintenanceHealthIndicator implements HealthIndicator {
 
-    @SneakyThrows
+    @Setter
+    private Boolean inMaintenance = false;
+
+    public void setInMaintenance(Boolean inMaintenance) {
+        this.inMaintenance = inMaintenance;
+    }
     @Override
     public Health health() {
-        Date start = formatter.parse(serviceWindowStart);
-        Date end = formatter.parse(serviceWindowEnd);
-        final Date now = new Date();
-        boolean inMaintenance = now.after(start) && now.before(end);
         if (!inMaintenance) {
             return Health.up().build();
         }
         return Health.down()
                 .withDetail("Reason", "In Maintenance period")
-                .withDetail("Start", serviceWindowStart)
-                .withDetail("End", serviceWindowEnd)
                 .build();
     }
 }
-
 ```
 
+### Exercise 3: Create a customer endpoint to toggle the maintenance mode of the healthcheck in the ServiceMaintenanceHealthIndicator
+Now we will expose a REST endpoint to toggle the maintenance mode of the health check.
+
+We make use of the @Endpoint and @WriteOperation annotations to create a custom endpoint.
+
+- Add a 
+- Create a new class called `ServiceMaintenanceEndpoint` and annotate it with `@Endpoint`.
+- Wire in the `ServiceMaintenanceHealthIndicator`.
+- Add a method `@WriteOperation` that receives a Boolean and uses that value to call the ServiceMaintenanceHealthIndicator's `setInMaintenance()` method.
+- Restart the application and hit the http://localhost:8080/actuator/health endpoint and see the status of the service.
+
+- Toggle the maintenance mode by hitting the endpoint with a POST request:
+- `curl http://localhost:8080/actuator/service-maintenance -H "Content-Type: application/json" -d '{"inMaintenance":"True"}'`
+- Hit the health endpoint and see the status of the service.
+
+
+#### Solution
+```java
+@Endpoint(id = "service-maintenance")
+@Component
+public class ServiceMaintenanceTogglerEndpoint {
+
+    @Autowired
+    private ServiceMaintenanceHealthIndicator serviceMaintenanceHealthIndicator;
+
+    @WriteOperation
+    public void setInMaintenance(Boolean inMaintenance) {
+        serviceMaintenanceHealthIndicator.setInMaintenance(inMaintenance);
+    }
+}
+```
