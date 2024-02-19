@@ -196,14 +196,15 @@ Now we will expose a REST endpoint to toggle the maintenance mode of the health 
 
 We make use of the @Endpoint and @WriteOperation annotations to create a custom endpoint.
 
-- Add a 
 - Create a new class called `ServiceMaintenanceEndpoint` and annotate it with `@Endpoint`.
 - Wire in the `ServiceMaintenanceHealthIndicator`.
 - Add a method `@WriteOperation` that receives a Boolean and uses that value to call the ServiceMaintenanceHealthIndicator's `setInMaintenance()` method.
 - Restart the application and hit the http://localhost:8080/actuator/health endpoint and see the status of the service.
 
 - Toggle the maintenance mode by hitting the endpoint with a POST request:
-- `curl http://localhost:8080/actuator/service-maintenance -H "Content-Type: application/json" -d '{"inMaintenance":"True"}'`
+
+`curl http://localhost:8080/actuator/service-maintenance -H "Content-Type: application/json" -d '{"inMaintenance":"True"}'`
+
 - Hit the health endpoint and see the status of the service.
 
 
