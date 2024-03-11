@@ -175,8 +175,8 @@ public class SpringPrimerApplication {
 ```
 
 
-### Exercise 6 - Curated list of dependencies - find version of a dependency
-In this exercise you'll inspect the list fo dependencies in order to find out exactly with version of Spring Core we are using.
+### Exercise 6 - Curated list of dependencies - find the version of a dependency
+In this exercise, you'll inspect the list for dependencies to find out exactly with the version of Spring Core we are using.
 
 - Open the pom.xml.
 - Use Intellij to navigate to the Parent pom.

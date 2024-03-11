@@ -85,10 +85,10 @@ Content of the `pom.xml`:
 ```
 
 ### Exercise 4: Add Configuration class to produce Spring Bean of Person-Service
-With the project foundation in place it is time to do some actual coding. We should now create a class with the
+With the project foundation in place, it is time to do some actual coding. We should now create a class with the
 @Configuration annotation on top and with a method that returns a new instance of PersonService.
 
-- Create a class PersonServiceConfiguration an annotate with @Configuration
+- Create a class PersonServiceConfiguration in the package `org.example.personservicestarter`, and annotate it with `@Configuration`.
 - Add a method that produces a Spring Bean of Person Service
   - Hint: use @Bean annotation.
 
@@ -135,10 +135,10 @@ public class PersonServiceConfiguration {
 
 ### Exercise 6: The spring.factories files
 The last element of a Spring-Boot starter is the file spring.factories. This file is processed by SpringBoot AutoConfiguration
-and will be sure to include your beans in the client project.
+and will include the beans declared there in any client project.
 
 - create a new file in the folder `src/main/resources/META-INF/spring/` called `org.springframework.boot.autoconfigure.AutoConfiguration.imports`
-- Add a line with a fully qualified name reference to your PersonServiceConfiguration, eg: `org.example.personservicestarter.PersonServiceConfiguration`
+- Add a line with a fully qualified name reference to your PersonServiceConfiguration, e.g.: `org.example.personservicestarter.PersonServiceConfiguration`
 
 #### Solution
 
@@ -150,6 +150,16 @@ org.example.personservicestarter.PersonServiceConfiguration
 
 ### Exercise 7: Build and install the project
 Use maven to build and install the person-service-starter project using either the terminal or the IDE
+
+This will install the project in your local maven repo, and it is ready to be used in other projects. 
+It has the following maven coordinates:
+
+```
+    <groupId>org.example</groupId>
+    <artifactId>person-service-starter</artifactId>
+    <version>1.0-SNAPSHOT</version>
+```
+This coordinates can be used in other projects to include the starter.
 
 #### Solution
 
@@ -163,7 +173,7 @@ execute `mvn install`
 Now you are done creating the starter - it is time to test it in a real project.
 
 - Create a Naked SpringBoot project.
-- Add a dependency to the person-service-starter.
+- Add a dependency to the person-service-starter using the maven coordinate from previous exercise.
 - Add a dependency to the person-service (it is NOT included in the person-service-starter)
 - Extract the PersonService bean and test it.
 
