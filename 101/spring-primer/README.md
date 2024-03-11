@@ -21,7 +21,7 @@ public class SpringPrimerApplication {
 }
 ```
 
-### Exercise 2 - Make a Bean with the @Bean-option
+### Exercise 2 - Make a Bean with the @Bean-option, aka "Java Configuration"
 - Create a class TextUpperCaser class that have a method that takes a String and returns the String UPPERCASED.
 - Register TextUpperCaser as a SpringBean using the @Bean option.
 - Retrieve the TextUpperCaser bean and use it.
@@ -56,7 +56,7 @@ public class SpringPrimerApplication {
 }
 ```
 
-### Exercise 3 - Make a Bean with the @Service option
+### Exercise 3 - Make a Bean with the @Service option, aka "Annotation Configuration"
 - Modify the TextUpperCaser to be a @Service.
 - Add @ComponentScan to the SpringPrimerApplication class.
 - Retrieve the TextUpperCaser bean and use it.
