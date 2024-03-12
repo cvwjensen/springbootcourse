@@ -79,7 +79,7 @@ public void receivePerson(@RequestBody Person person) {
 A file upload is really just a http request where the content part should be interpretated as a file. But we have to receive it as a MultipartFile object. Let's try to receive an upload:
 - Make a method `public String receiveFile(@RequestParam("file") MultipartFile file)`
 - Annotate the method with @PostMapping("/upload-file") to instruct Spring to map the method to the POST verb and the path /upload-file.
-- In the method take out the bytes from the file, convert them to a new String() and return that String.
+- In the method take out the bytes from the file, convert them to a new String(), print it and return the filename.
 - Restart the application
 - Run `curl localhost:8080/upload-file -F "file=@pom.xml"` (or some other local text-file)
 
