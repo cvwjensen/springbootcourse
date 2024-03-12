@@ -137,7 +137,7 @@ Hit the http://localhost:8080/actuator/info
 
 ## Exercises on Health
 
-### Exercise 1: Enable the RabbitMQ build-in health indicator
+### Exercise 6: Enable the RabbitMQ build-in health indicator
 
 - Add the `spring-boot-starter-amqp` starter to the `pom.xml`.
 - Enable the rabbit health check by adding `management.health.rabbit.enabled=true` to the `application.properties`
@@ -155,7 +155,7 @@ docker-compose -f ../../docker-compose.yml up rabbit
 
 NB! It might take 30 seconds for the health check to report UP.
 
-### Exercise 2: Create your own health check: ServiceMaintenanceHealthIndicator
+### Exercise 7: Create your own health check: ServiceMaintenanceHealthIndicator
 
 Create a Health Check that reports down if the service is in maintenance. 
 
@@ -191,7 +191,7 @@ public class ServiceMaintenanceHealthIndicator implements HealthIndicator {
 }
 ```
 
-### Exercise 3: Create a customer endpoint to toggle the maintenance mode of the healthcheck in the ServiceMaintenanceHealthIndicator
+### Exercise 8: Create a customer endpoint to toggle the maintenance mode of the healthcheck in the ServiceMaintenanceHealthIndicator
 Now we will expose a REST endpoint to toggle the maintenance mode of the health check.
 
 We make use of the @Endpoint and @WriteOperation annotations to create a custom endpoint.
@@ -223,3 +223,36 @@ public class ServiceMaintenanceTogglerEndpoint {
     }
 }
 ```
+
+## Springboot and Kubernetes
+inspiration: https://bell-sw.com/blog/spring-boot-monitoring-in-kubernetes-with-prometheus-and-grafana/
+
+
+### Exercise 9: Setup Prometheus and Grafana in Kubernetes
+- add bitnami helm repo with `helm repo add bitnami https://charts.bitnami.com/bitnami`
+- install prometheus with `helm install prometheus bitnami/kube-prometheus`
+- install Grafaana with `helm install grafana bitnami/grafana`
+- get grafana password with `echo "Password: $(kubectl get secret grafana-admin --namespace default -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 -d)"`
+- expose prometheus with `kubectl port-forward --namespace default svc/prometheus-kube-prometheus-prometheus 9090`
+- expose grafana with `kubectl port-forward --namespace default svc/grafana 3000`
+- login to grafana with admin and the password from the echo command
+- add a new data source with the url `http://prometheus-kube-prometheus-prometheus.default.svc.cluster.local:9090`
+- add a new dashboard with the id `12900` and the name `Spring Boot Actuator`
+
+### Exercise 10: Finish person-service-api:
+- add `spring-boot-starter-actuator` and `io.micrometer:micrometer-registry-prometheus` to the pom.xml
+- add `management.endpoints.web.exposure.include=health,metrics,prometheus` to application.properties
+- copy the Dockerfile from `api/person-service-api/Dockerfile` to the root of the project
+- copy the kubernetes deployment from `api/person-service-api/kubernetes/deployment.yaml` to the root of the project
+- build a docker image with `docker build . -t person-service-api`
+- start minukube with `minikube start`
+- load the docker image with `minikube image load person-service-api`
+- apply the kubernetes manifest with `kubectl apply -f deployment.yaml`
+- expose the service with `kubectl port-forward --namespace default svc/spring-boot-app-service 8080`
+- check localhost:8080/person
+- check localhost:8080/actuator/health
+- check localhost:8080/actuator/metrics
+- check localhost:8080/actuator/prometheus
+
+### Exercise 11: Check the dashboards in Grafana
+- http://localhost:3000/d/X034JGT7Gz/springboot-apm-dashboard?orgId=1&from=now-5m&to=now&refresh=auto
