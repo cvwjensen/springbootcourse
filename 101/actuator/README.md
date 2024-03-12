@@ -231,7 +231,7 @@ inspiration: https://bell-sw.com/blog/spring-boot-monitoring-in-kubernetes-with-
 ### Exercise 9: Setup Prometheus and Grafana in Kubernetes
 - add bitnami helm repo with `helm repo add bitnami https://charts.bitnami.com/bitnami`
 - install prometheus with `helm install prometheus bitnami/kube-prometheus`
-- install Grafaana with `helm install grafana bitnami/grafana`
+- install Grafana with `helm install grafana bitnami/grafana`
 - get grafana password with `echo "Password: $(kubectl get secret grafana-admin --namespace default -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 -d)"`
 - expose prometheus with `kubectl port-forward --namespace default svc/prometheus-kube-prometheus-prometheus 9090`
 - expose grafana with `kubectl port-forward --namespace default svc/grafana 3000`
@@ -243,8 +243,8 @@ inspiration: https://bell-sw.com/blog/spring-boot-monitoring-in-kubernetes-with-
 - add `spring-boot-starter-actuator` and `io.micrometer:micrometer-registry-prometheus` to the pom.xml
 - add `management.endpoints.web.exposure.include=health,metrics,prometheus` to application.properties
 - copy the Dockerfile from `api/person-service-api/Dockerfile` to the root of the project
-- copy the kubernetes deployment from `api/person-service-api/kubernetes/deployment.yaml` to the root of the project
 - build a docker image with `docker build . -t person-service-api`
+- copy the kubernetes deployment from `api/person-service-api/kubernetes/deployment.yaml` to the root of the project
 - start minukube with `minikube start`
 - load the docker image with `minikube image load person-service-api`
 - apply the kubernetes manifest with `kubectl apply -f deployment.yaml`

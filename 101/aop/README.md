@@ -19,7 +19,7 @@ Then add to the pom.xml the AOP starter:
    - It should target all bean called *Service 
    - It should mark the time before and after executing the JoinPoint. 
    - Then it should print the difference of the two marks.
-3. Make a Spring Bean of type CommandLineRunner that executes the simples service's method.
+3. Make a Spring Bean of type CommandLineRunner that executes the simple service's method.
 
 #### Solution
 **Service**: `101/aop/src/main/java/dk/lundogbendsen/aop/service/MyService.java`.
