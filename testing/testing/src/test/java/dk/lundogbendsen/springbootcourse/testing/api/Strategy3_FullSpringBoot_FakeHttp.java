@@ -2,14 +2,13 @@ package dk.lundogbendsen.springbootcourse.testing.api;
 
 import dk.lundogbendsen.springbootcourse.testing.model.Person;
 import dk.lundogbendsen.springbootcourse.testing.repository.PersonRepository;
-import dk.lundogbendsen.springbootcourse.testing.service.MyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -32,6 +31,8 @@ public class Strategy3_FullSpringBoot_FakeHttp {
 
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    ApplicationContext applicationContext;
 
     // Register a Mocked bean in the place of this type. This Mock will be Dependency Injected into the other Spring Beans
     @MockBean

@@ -32,6 +32,8 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <!-- You have to define the scope test, or it is part of the final jar.-->
+            <scope>test</scope>
         </dependency>
 
 

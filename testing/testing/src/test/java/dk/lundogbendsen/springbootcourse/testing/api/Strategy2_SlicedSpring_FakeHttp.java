@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -26,11 +27,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 // Sliced SpringContext
 // Register the classes in the list as SpringBean
-@WebMvcTest({PersonController.class})
+@WebMvcTest({PersonController.class}) // Tell slice to ONLY load the PersonController, and the other controllers.
+// Filters are loaded (eg dk.lundogbendsen.springbootcourse.testing.api.LoggingFilter)
 public class Strategy2_SlicedSpring_FakeHttp {
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     // Register a Mocked bean in the place of this type. This Mock will be Dependency Injected into the other Spring Beans
     @MockBean
