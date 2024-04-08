@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes={MyService.class})
+// OR just... @SpringJUnitConfig(classes = {MyService.class})
 public class MyServiceSlicedExtension {
     @MockBean
     private PersonRepository personRepository;
