@@ -73,7 +73,10 @@ public class BasicQueriesTest {
         studentRepository.saveAll(List.of(josh, anna, jane, tom));
         teacherRepository.saveAll(List.of(johnson, smith, kayne));
         courseRepository.saveAll(List.of(art, philosophy, math));
+        // forces synchronization to DB
         courseRepository.flush();
+        // clears persistence context
+        // all entities are now detached and must be fetched via db contact
         em.clear();
     }
 
