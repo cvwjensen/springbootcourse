@@ -433,7 +433,7 @@ We will now make the same security check by using an Intercepter.
 - Outcomment the @Bean that registers the Filter from exercise 1.
   
 - Make a new UnauthorizedException class extending the ResponseStatusException that call super with `super(HttpStatus.UNAUTHORIZED, "The request requires an ApiToken")`.
-- Make a new class SecurityIntercepter that implements HandlerIntercepter.
+- Make a new class SecurityIntercepter that implements HandlerInterceptor.
 - Override the preHandle method.
 - If there is no apiToken header, then throw a new UnauthorizedException.
 - Otherwise return true.
