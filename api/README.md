@@ -383,7 +383,7 @@ Only requests with a header containing an apiToken can pass.
 - In the doFilter method extract the http header "apiToken" (hint: cast the request parameter to a HttpServletRequest)
 - If the apiToken is NOT present, send an error of 401 with a descriptive message and return (hint: cast the response to HttpServletResponse and use the sendError()).
 - Otherwise call the filter chain.
-- Register the new filter by creating a FilterRegistrationBean that returns a new FilterRegistrationBean with your filter.
+- Register the new filter by creating a @Bean method that returns a FilterRegistrationBean with your filter.
 - Restart the application.
 - Run `curl localhost:8080/`
 
