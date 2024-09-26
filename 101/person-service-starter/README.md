@@ -16,6 +16,8 @@ You need to get the person-service downloaded to your PC, and then build it.
 
 Alternative 1 - using the Terminal
 
+This alternative requires maven to be installed on your PC.
+
 - Use a terminal to clone the github repo: https://github.com/cvwjensen/person-service.git
 - cd in to the project folder and execute `mvn install`.
 
