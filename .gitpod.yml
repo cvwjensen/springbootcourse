@@ -8,7 +8,7 @@ ports:
 
 vscode:
   extensions:
-    - pivotal.vscode-spring-boot
+    - vscjava.vscode-spring-initializr
     - vscjava.vscode-java-pack
 
 jetbrains:
